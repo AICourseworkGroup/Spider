@@ -3,42 +3,95 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 from mpl_toolkits.mplot3d import Axes3D
 
-# NOTE: You MUST implement the forward_leg_kinematics2 function
-# The function must accept: (base_pos, base_angle, leg_angles, segment_lengths)
-# The function must return: j1, j2, j3, j4 (all 3-element NumPy arrays)
-def forward_leg_kinematics2(base_pos, base_angle, leg_angles, segment_lengths):
+
+def axis_angle_rotation_matrix(axis, angle):
     """
-    PLACEHOLDER: You must replace this with the correct 3D forward kinematics 
-    for the spider leg model. This version simply extends the leg straight 
-    out from the body base for demonstration purposes.
+    Helper function to compute a 3x3 rotation matrix from an axis and an angle.
+    """
+    norm = np.linalg.norm(axis)
+    if norm == 0:
+        return np.identity(3) # Return identity matrix if axis is zero
+    axis = axis / norm
+    
+    x, y, z = axis
+    c = np.cos(angle)
+    s = np.sin(angle)
+    C = 1 - c
+    
+    R = np.array([
+        [ x*x*C + c,   x*y*C - z*s, x*z*C + y*s ],
+        [ y*x*C + z*s, y*y*C + c,   y*z*C - x*s ],
+        [ z*x*C - y*s, z*y*C + x*s, z*z*C + c ]
+    ])
+    return R
+
+def rotate_vector(v, axis, angle):
+    """
+    Helper function to rotate a 3D vector around an axis by an angle.
+    """
+    R = axis_angle_rotation_matrix(axis, angle)
+    v_rot = (R @ v.T).T 
+    return v_rot
+
+def forward_leg_kinematics2(base_pos, base_angle, joint_angles, segment_lengths):
+    """
+    This is the CORRECT 3D kinematics function translated from your MATLAB file.
+    It USES theta2 and theta3 to create bends.
     """
     
-    # Unpack values
-    L_coxa, L_femur, L_tibia = segment_lengths
-    theta1, theta2, theta3 = leg_angles
+    # Unpack joint angles
+    theta1, theta2, theta3 = joint_angles
     
-    # --- Placeholder Logic (REPLACE THIS) ---
+    # Unpack segment lengths
+    L1, L2, L3 = segment_lengths
+    
+    # Joint 1: leg base on body
     j1 = np.array(base_pos)
     
-    # Calculate total length for a stretched-out leg for a simple placeholder
-    L_total = L_coxa + L_femur + L_tibia
+    # --- Compute Coxa direction with elevation ---
+    coxa_elevation = np.deg2rad(30)  # fixed 30 degree upward pitch for coxa
     
-    # Direction vector based on body base angle and coxa angle (theta1)
-    # Assumes a 2D rotation for the base joints for simplification
-    angle_total = base_angle + theta1
+    # Horizontal direction of coxa in XY plane based on base_angle + theta1
+    coxa_horiz_dir = np.array([np.cos(base_angle + theta1), np.sin(base_angle + theta1), 0])
     
-    # Very simple extension from the base for a placeholder
-    j2_dir = np.array([L_coxa * np.cos(angle_total), L_coxa * np.sin(angle_total), 0])
-    j2 = j1 + j2_dir 
-
-    j3_dir = np.array([L_femur * np.cos(angle_total), L_femur * np.sin(angle_total), 0])
-    j3 = j2 + j3_dir 
-
-    j4_dir = np.array([L_tibia * np.cos(angle_total), L_tibia * np.sin(angle_total), 0])
-    j4 = j3 + j4_dir 
-
+    # Rotation axis for pitch up: perpendicular to coxa horizontal direction
+    rot_axis = np.cross(coxa_horiz_dir, np.array([0, 0, 1]))
+    
+    # Rotate horizontal coxa direction upward
+    coxa_dir = rotate_vector(coxa_horiz_dir, rot_axis, coxa_elevation)
+    
+    # Joint 2 position: end of coxa segment
+    j2 = j1 + L1 * coxa_dir
+    
+    # --- Femur rotation (THIS USES THETA_2) ---
+    femur_rot_axis = np.cross(coxa_dir, np.array([0, 0, 1]))
+    
+    if np.linalg.norm(femur_rot_axis) == 0:
+         # if coxa is vertical, pick an arbitrary axis, e.g., Y-axis
+        femur_rot_axis = np.array([0, 1, 0])
+    else:
+        femur_rot_axis = femur_rot_axis / np.linalg.norm(femur_rot_axis)
+    
+    femur_dir = rotate_vector(coxa_dir, femur_rot_axis, theta2)
+    
+    # Joint 3 position: end of femur segment
+    j3 = j2 + L2 * femur_dir
+    
+    # --- Tibia rotation (THIS USES THETA_3) ---
+    tibia_rot_axis = np.cross(femur_dir, np.array([0, 0, 1]))
+    
+    if np.linalg.norm(tibia_rot_axis) == 0:
+        tibia_rot_axis = np.array([0, 1, 0])
+    else:
+        tibia_rot_axis = tibia_rot_axis / np.linalg.norm(tibia_rot_axis)
+    
+    tibia_dir = rotate_vector(femur_dir, tibia_rot_axis, theta3)
+    
+    # Joint 4 position: end of tibia segment (foot)
+    j4 = j3 + L3 * tibia_dir
+    
     return j1, j2, j3, j4
-# --------------------------------------------------------------------------
+
 
 def plot_spider_pose(angles):
     """
@@ -147,16 +200,22 @@ def plot_spider_pose(angles):
 # --- Example Usage ---
 if __name__ == '__main__':
     # Define a symmetric stance (same example values as before)
-    T1_rad = np.deg2rad(5)    # Small Yaw
-    T2_rad = np.deg2rad(45)   # Femur Bend
-    T3_rad = np.deg2rad(10)   # Tibia Bend
+    T1_rad = np.deg2rad(0)    # Small Yaw
+    T2_rad = np.deg2rad(-45)   # Femur Bend
+    T3_rad = np.deg2rad(-90)   # Tibia Bend
 
-    left_set = np.array([T1_rad, T2_rad, T3_rad])
-    right_set = np.array([-T1_rad, T2_rad, T3_rad])
+    L1 = np.array([T1_rad, T2_rad , T3_rad])
+    L2 = np.array([T1_rad, T2_rad , T3_rad])
+    L3 = np.array([T1_rad, T2_rad , T3_rad])
+    L4 = np.array([T1_rad, T2_rad , T3_rad])
+    R1 = np.array([-T1_rad, T2_rad, T3_rad])
+    R2 = np.array([-T1_rad, T2_rad, T3_rad])
+    R3 = np.array([-T1_rad, T2_rad, T3_rad])
+    R4 = np.array([-T1_rad, T2_rad, T3_rad])
 
     angles = np.concatenate([
-        left_set, left_set, left_set, left_set,   # L1 to L4
-        right_set, right_set, right_set, right_set # R4 to R1
+        L1, L2, L3, L4,   # L1 to L4
+        R1, R2, R3, R4    # R1 to R4
     ])
 
     plot_spider_pose(angles)
