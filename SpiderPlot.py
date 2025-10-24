@@ -93,13 +93,14 @@ def forward_leg_kinematics2(base_pos, base_angle, joint_angles, segment_lengths)
     return j1, j2, j3, j4
 
 
-def plot_spider_pose(angles):
+def plot_spider_pose(angles, ax=None):
     """
     Plot a static 3D spider pose based on joint angles.
 
     Input:
       angles: 1x24 NumPy array of joint angles in radians
               [theta1_1, theta2_1, theta3_1, ..., theta1_8, theta2_8, theta3_8]
+      ax: Optional matplotlib 3D axis to plot on. If None, creates a new figure.
     """
     
     # --- Parameters ---
@@ -118,9 +119,10 @@ def plot_spider_pose(angles):
     if len(angles) != n_legs * 3:
         raise ValueError('Input angles must be a 1x24 vector (3 angles per leg for 8 legs).')
     
-    # --- Setup figure (MATLAB's figure, clf, axis equal, grid, hold on, view) ---
-    fig = plt.figure(figsize=(10, 8), facecolor='w')
-    ax = fig.add_subplot(111, projection='3d')
+    # --- Setup figure if not provided ---
+    if ax is None:
+        fig = plt.figure(figsize=(10, 8), facecolor='w')
+        ax = fig.add_subplot(111, projection='3d')
     
     ax.set_facecolor('w') # Set figure background to white
     ax.set_xlabel('X'); ax.set_ylabel('Y'); ax.set_zlabel('Z')
