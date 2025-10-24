@@ -203,8 +203,12 @@ if __name__ == '__main__':
     T1_rad = np.deg2rad(0)    # Small Yaw
     T2_rad = np.deg2rad(-45)   # Femur Bend
     T3_rad = np.deg2rad(-90)   # Tibia Bend
+    T4_rad = np.deg2rad(0)    # Not used
 
-    L1 = np.array([T1_rad, T2_rad , T3_rad])
+    #T3_rad = shin (Lowest part of leg)
+    #T2_rad = thigh (Middle part of leg)
+
+    L1 = np.array([T1_rad , T2_rad, T3_rad])
     L2 = np.array([T1_rad, T2_rad , T3_rad])
     L3 = np.array([T1_rad, T2_rad , T3_rad])
     L4 = np.array([T1_rad, T2_rad , T3_rad])
