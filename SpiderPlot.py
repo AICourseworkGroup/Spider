@@ -3,6 +3,12 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 from mpl_toolkits.mplot3d import Axes3D
 
+''' 
+
+DUE TO UNFAMILIARITY WITH MATPLOTLIB ANIMATION, THIS FILE WAS 90%+ TRANSLATED AND CREATED FROM MATLAB CODE USING CLAUDE SONNET 3.5 IN CO-PILOT IN VSCODE
+
+'''
+
 
 def axis_angle_rotation_matrix(axis, angle):
     """
