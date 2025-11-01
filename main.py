@@ -16,6 +16,6 @@ if __name__ == '__main__':
     R3 = np.array([-a, b, c])
     R4 = np.array([-a, b, c])
 
-    angles = np.concatenate([L1, L2, L3, L4, R1, R2, R3, R4])
+    angles = np.concatenate([L1, L2, L3, L4, R4, R3, R2, R1])
 
     plot_spider_pose(angles)
