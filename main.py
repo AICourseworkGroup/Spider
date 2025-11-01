@@ -11,10 +11,10 @@ if __name__ == '__main__':
     L2 = np.array([a, b, c])
     L3 = np.array([a, b, c])
     L4 = np.array([a, b, c])
-    R1 = np.array([-a, b, c])
-    R2 = np.array([-a, b, c])
-    R3 = np.array([-a, b, c])
     R4 = np.array([-a, b, c])
+    R3 = np.array([-a, b, c])
+    R2 = np.array([-a, b, c])
+    R1 = np.array([-a, b, c])
 
     angles = np.concatenate([L1, L2, L3, L4, R4, R3, R2, R1])
 
