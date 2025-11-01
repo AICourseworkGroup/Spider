@@ -8,7 +8,6 @@ def createTargerChromosone():
     b = math.radians(-45)
     c = math.radians(-30)
 
-
     l1 = [a, b, c]
     l2 = [a, b, c]
     l3 = [a, b, c]
@@ -23,7 +22,7 @@ def createTargerChromosone():
     return angles
 
 
-def randDegGen():
+def randRadianGen():
     angle = math.radians(rd.randint(-180, 180))
     return angle
     
@@ -33,14 +32,14 @@ def createRandomPopulation():
     population = []
 
     for i in range(populationSize):
-        l1 = [randDegGen(), randDegGen(), randDegGen()]
-        l2 = [randDegGen(), randDegGen(), randDegGen()]
-        l3 = [randDegGen(), randDegGen(), randDegGen()]
-        l4 = [randDegGen(), randDegGen(), randDegGen()]
-        r4 = [randDegGen(), randDegGen(), randDegGen()]
-        r3 = [randDegGen(), randDegGen(), randDegGen()]
-        r2 = [randDegGen(), randDegGen(), randDegGen()]
-        r1 = [randDegGen(), randDegGen(), randDegGen()]
+        l1 = [randRadianGen(), randRadianGen(), randRadianGen()]
+        l2 = [randRadianGen(), randRadianGen(), randRadianGen()]
+        l3 = [randRadianGen(), randRadianGen(), randRadianGen()]
+        l4 = [randRadianGen(), randRadianGen(), randRadianGen()]
+        r4 = [randRadianGen(), randRadianGen(), randRadianGen()]
+        r3 = [randRadianGen(), randRadianGen(), randRadianGen()]
+        r2 = [randRadianGen(), randRadianGen(), randRadianGen()]
+        r1 = [randRadianGen(), randRadianGen(), randRadianGen()]
 
         angles = l1 + l2 + l3 + l4 + r4 + r3 + r2 + r1
         population.append(angles)
@@ -48,14 +47,15 @@ def createRandomPopulation():
     return population
 
 
-targetChromosone = createTargerChromosone()
 def calculateFitness(inputAngles, targetChromosone):
     diffs = [abs(t - i) for t, i in zip(targetChromosone, inputAngles)]
     fitness = sum(diffs)
     return fitness
 
+
+targetChromosone = createTargerChromosone()
 population = createRandomPopulation()
-print(f'population: {population}')
-print(f'targetChromosone: {targetChromosone}')
+print(f'population: \n{population}')
+print(f'\ntargetChromosone: {targetChromosone}')
 print(f'fitness of population[4]: {calculateFitness(population[4], targetChromosone)}')
 
