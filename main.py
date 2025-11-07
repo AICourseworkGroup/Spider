@@ -27,8 +27,7 @@ def randRadianGen():
     return angle
     
 
-def createRandomPopulation():
-    populationSize = 30
+def createRandomPopulation(populationSize = 30):
     population = []
 
     for i in range(populationSize):
@@ -63,13 +62,46 @@ def calculateBestFitness(population, targetChromosone):
             bestFitness = currentFitness
             secondBestIndex = bestIndex
             bestIndex = i
+    return bestIndex, secondBestIndex, bestFitness
 
-    print(f'Best fitness: {bestFitness} at index {bestIndex}. second best fitness: {secondBestFitness} at index {secondBestIndex}')
-    return bestIndex, secondBestIndex
 
-targetChromosone = createTargetChromosone()
-population = createRandomPopulation()
-print(f'population: \n{population}')
-print(f'\ntargetChromosone: {targetChromosone}')
-print(f'fitness of population[4]: {calculateFitness(population[4], targetChromosone)}')
+def crossover(chromasoneA, chromasoneB):
+    crossoverPoint = rd.randint(1, len(chromasoneA) - 1)
+    newChromosone1 = chromasoneA[:crossoverPoint] + chromasoneB[crossoverPoint:]
+    newChromosone2 = chromasoneB[:crossoverPoint] + chromasoneA[crossoverPoint:]
+    return newChromosone1, newChromosone2
 
+def mutate(chromosone, mutationRate):
+    mutatedChromosone = chromosone.copy()
+    for i in range(len(mutatedChromosone)):
+        if rd.random() < mutationRate:
+            mutatedChromosone[i] = randRadianGen()
+    return mutatedChromosone
+
+def createNewPopulation(best, secondBest, populationSize):
+    newPopulation = []
+    for i in range(int(populationSize / 2)):
+        newChromosoneA, newChromosoneB = crossover(best, secondBest)
+        newPopulation.append(newChromosoneA)
+        newPopulation.append(newChromosoneB)
+    return newPopulation
+
+def main(generations, populationSize, mutationRate):
+    targetChromosone = createTargetChromosone()
+    population = createRandomPopulation(populationSize)
+
+    for gen in range(generations):
+        bestChromosoneIndex, secondBestChromosoneIndex, bestFitness = calculateBestFitness(population, targetChromosone)
+        print(f"Generation {gen}: Best Fitness = {bestFitness}")
+
+        newPop = createNewPopulation(population[bestChromosoneIndex], population[secondBestChromosoneIndex], populationSize)
+
+        mutatedPop = []
+        for i in range(len(newPop)):
+            potentiallyMutatedChromosone = mutate(newPop[i], mutationRate)
+            mutatedPop.append(potentiallyMutatedChromosone)
+        
+        population = mutatedPop
+
+if __name__ == "__main__":
+    main(100, 100, 0.1)
