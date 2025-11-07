@@ -2,7 +2,7 @@ import random as rd
 import math
 from plot_spider_pose import plot_spider_pose
 
-def createTargerChromosone():
+def createTargetChromosone():
 
     a = math.radians(0)
     b = math.radians(-45)
@@ -46,14 +46,28 @@ def createRandomPopulation():
 
     return population
 
-
 def calculateFitness(inputAngles, targetChromosone):
     diffs = [abs(t - i) for t, i in zip(targetChromosone, inputAngles)]
     fitness = sum(diffs)
     return fitness
 
+def calculateBestFitness(population, targetChromosone):
+    bestIndex = 0
+    bestFitness = float('inf')
+    secondBestFitness = float('inf')
+    secondBestIndex = None
+    for i, chrom in enumerate(population):
+        currentFitness = calculateFitness(chrom, targetChromosone)
+        if currentFitness < bestFitness:
+            secondBestFitness = bestFitness
+            bestFitness = currentFitness
+            secondBestIndex = bestIndex
+            bestIndex = i
 
-targetChromosone = createTargerChromosone()
+    print(f'Best fitness: {bestFitness} at index {bestIndex}. second best fitness: {secondBestFitness} at index {secondBestIndex}')
+    return bestIndex, secondBestIndex
+
+targetChromosone = createTargetChromosone()
 population = createRandomPopulation()
 print(f'population: \n{population}')
 print(f'\ntargetChromosone: {targetChromosone}')
