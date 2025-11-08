@@ -2,25 +2,72 @@ import random as rd
 import math
 from plot_spider_pose import plot_spider_pose
 
-def createTargetChromosone():
+def createTargetChromosone(a, b, c, isA):
 
-    a = math.radians(0)
-    b = math.radians(-45)
-    c = math.radians(-30)
+    # isA checks whether the target chromosone being made is for the standing pose or the mid walk pose and sets the values
+    # of the a angles to positive or negative accordingly.
+    if isA == True:
+        l1 = [a, b, c]
+        l2 = [a, b, c]
+        l3 = [a, b, c]
+        l4 = [a, b, c]
+        r4 = [-a, b, c]
+        r3 = [-a, b, c]
+        r2 = [-a, b, c]
+        r1 = [-a, b, c]
+    else:
+        l1 = [a, b, c]
+        l2 = [-a, b, c]
+        l3 = [a, b, c]
+        l4 = [-a, b, c]
+        r4 = [a, b, c]
+        r3 = [-a, b, c]
+        r2 = [a, b, c]
+        r1 = [-a, b, c]
 
-    l1 = [a, b, c]
-    l2 = [a, b, c]
-    l3 = [a, b, c]
-    l4 = [a, b, c]
-    r4 = [-a, b, c]
-    r3 = [-a, b, c]
-    r2 = [-a, b, c]
-    r1 = [-a, b, c]
 
     # return a flat Python list (24 floats) in radians
     angles = l1 + l2 + l3 + l4 + r4 + r3 + r2 + r1
+
+    print(f"Target chromosone: {angles} ") 
+    plot_spider_pose(angles)
+
     return angles
 
+def createTargetChromosoneList(targetChromosoneA, targetChromosoneB):
+
+    # Step 1: Get the initial standing chromosone and the halfway point "leg touching" chromosone
+
+    # Step 2: Take away the difference between the two chromosones.
+    differenceBetweenChromosones = calculateFitness(targetChromosoneA, targetChromosoneB)
+
+    # Step 3: Divide this difference by 148 to get the amount we need to increment by.
+
+    differenceBetweenChromosones = differenceBetweenChromosones / 148
+
+    # Step 4: For loop that creates the 148 inbetween chromosones. It will do this by adding the difference / 148 to the
+    # angles everytime and then appending that target chromosone to the list.
+
+    # Here we initialise the list of target chromosones with the initial standing one.
+    targetChromosones = [targetChromosoneA]
+
+    # Generate 148 intermediate chromosones between targetChromosoneA and targetChromosoneB
+    for i in range(148):
+
+        # We add the currently generated target chromosone to the list and then repeat the loop.
+        targetChromosones.append(currentTargetChromosone)
+
+    # With all intermediary frames added, we can now add the middle frame
+    targetChromosones.append(targetChromosoneB)
+
+    # Step 5: Once we have these initial 150 frames, we can get the final 150 by simply reversing the list and going
+    # backwards to return to the starting position
+
+    # This is a list of every target chromosone for all 300 frames. Every time we generate a new target we append it to 
+    # this list. When we run the genetic algorithm we'll do a for loop where we go to the next target chromosone every time
+    # that i increments.
+    
+    return targetChromosones
 
 def randRadianGen():
     angle = math.radians(rd.randint(-180, 180))
@@ -87,12 +134,17 @@ def createNewPopulation(best, secondBest, populationSize):
     return newPopulation
 
 def main(generations, populationSize, mutationRate):
-    targetChromosone = createTargetChromosone()
+
+    #We create the two initial target chromosone poses (standing and mid stride)
+    targetChromosoneA = createTargetChromosone(math.radians(0), math.radians(-45), math.radians(-30), True)
+    targetChromosoneB = createTargetChromosone(math.radians(20), math.radians(-45), math.radians(-30), False)
+    #createTargetChromosoneList(targetChromosoneA, targetChromosoneB)
+
     population = createRandomPopulation(populationSize)
 
     for gen in range(generations):
-        bestChromosoneIndex, secondBestChromosoneIndex, bestFitness = calculateBestFitness(population, targetChromosone)
-        print(f"Generation {gen}: Best Fitness = {bestFitness}")
+        bestChromosoneIndex, secondBestChromosoneIndex, bestFitness = calculateBestFitness(population, targetChromosoneA)
+        print(f"Generation {gen}: Best Fitness = {100 - bestFitness}")
 
         newPop = createNewPopulation(population[bestChromosoneIndex], population[secondBestChromosoneIndex], populationSize)
 
