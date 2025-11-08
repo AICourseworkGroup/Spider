@@ -36,32 +36,38 @@ def createTargetChromosone(a, b, c, isA):
 
 def createTargetChromosoneList(targetChromosoneA, targetChromosoneB):
 
-    # Step 1: Get the initial standing chromosone and the halfway point "leg touching" chromosone
+    # Step 1: Take away the difference between the two chromosones.
+    differenceBetweenChromosones = [b - a for a, b in zip(targetChromosoneA, targetChromosoneB)]
 
-    # Step 2: Take away the difference between the two chromosones.
-    differenceBetweenChromosones = calculateFitness(targetChromosoneA, targetChromosoneB)
-
-    # Step 3: Divide this difference by 148 to get the amount we need to increment by.
-
-    differenceBetweenChromosones = differenceBetweenChromosones / 148
-
-    # Step 4: For loop that creates the 148 inbetween chromosones. It will do this by adding the difference / 148 to the
-    # angles everytime and then appending that target chromosone to the list.
+    # Step 2: Divide this difference by 148 to get the amount we need to increment by.
+    differenceBetweenChromosones = [d / 148 for d in differenceBetweenChromosones]
 
     # Here we initialise the list of target chromosones with the initial standing one.
     targetChromosones = [targetChromosoneA]
 
-    # Generate 148 intermediate chromosones between targetChromosoneA and targetChromosoneB
+    # Step 3: For loop that creates the 148 inbetween chromosones. It will do this by adding the difference / 148 to the
+    # angles everytime and then appending that target chromosone to the list.
     for i in range(148):
+        step = i + 1
+        currentTargetChromosone = [a + step * d for a, d in zip(targetChromosoneA, differenceBetweenChromosones)]
 
-        # We add the currently generated target chromosone to the list and then repeat the loop.
+        # After calculating the incremented frame we append it to the list before looping again
         targetChromosones.append(currentTargetChromosone)
 
-    # With all intermediary frames added, we can now add the middle frame
+    # With all intermediary frames added, we can now add the middle (150th) frame
     targetChromosones.append(targetChromosoneB)
 
     # Step 5: Once we have these initial 150 frames, we can get the final 150 by simply reversing the list and going
     # backwards to return to the starting position
+
+    targetChromosones += targetChromosones[::-1]
+    
+    #Checking it works
+
+    for i in range(len(targetChromosones)):
+        if i % 10 == 0:  # Print and plot every 10th frame for brevity
+            print(f"Frame {i}: {targetChromosones[i]}")
+            plot_spider_pose(targetChromosones[i])
 
     # This is a list of every target chromosone for all 300 frames. Every time we generate a new target we append it to 
     # this list. When we run the genetic algorithm we'll do a for loop where we go to the next target chromosone every time
@@ -138,7 +144,7 @@ def main(generations, populationSize, mutationRate):
     #We create the two initial target chromosone poses (standing and mid stride)
     targetChromosoneA = createTargetChromosone(math.radians(0), math.radians(-45), math.radians(-30), True)
     targetChromosoneB = createTargetChromosone(math.radians(20), math.radians(-45), math.radians(-30), False)
-    #createTargetChromosoneList(targetChromosoneA, targetChromosoneB)
+    createTargetChromosoneList(targetChromosoneA, targetChromosoneB)
 
     population = createRandomPopulation(populationSize)
 
