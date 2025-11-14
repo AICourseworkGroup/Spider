@@ -91,8 +91,7 @@ class Full_NN(object):
         msq = np.average((t - output) ** 2)
         return msq
 
-#from main import GAPoses
-from plot_spider_pose import plot_spider_pose
+
 
 def randAngGen():
     angle = random() * np.pi / -4 # random angle between 0 and 45 degrees in radians
@@ -113,5 +112,3 @@ def genRanPoses(popSize=3000):
         poses.append(angles)
     return poses
 
-inputData = genRanPoses()
-#targetData = GAPoses
