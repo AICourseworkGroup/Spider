@@ -203,11 +203,11 @@ def generate_target_poses():
     """
     #We create the two initial target chromosone poses (standing and mid stride)
     targetChromosoneA = createTargetChromosone(math.radians(0), math.radians(-45), math.radians(-30), True)
-    plot_spider_pose(targetChromosoneA)
-    plt.title("Target Chromosome A")
+    title = "Target Chromosome A"
+    plot_spider_pose(targetChromosoneA, title=title)
+    title = "Target Chromosome B"
     targetChromosoneB = createTargetChromosone(math.radians(20), math.radians(-45), math.radians(-30), False)
-    plot_spider_pose(targetChromosoneB)
-    plt.title("Target Chromosome B")
+    plot_spider_pose(targetChromosoneB, title=title)
     targetChromosoneList = createTargetChromosoneList(targetChromosoneA, targetChromosoneB)
     animate_target_chromosomes(targetChromosoneList)
     
