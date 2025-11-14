@@ -40,26 +40,23 @@ def createTargetChromosoneList(targetChromosoneA, targetChromosoneB):
     # Step 1: Take away the difference between the two chromosones.
     differenceBetweenChromosones = [b - a for a, b in zip(targetChromosoneA, targetChromosoneB)]
 
-    # Step 2: Divide this difference by 148 to get the amount we need to increment by.
-    differenceBetweenChromosones = [d / 148 for d in differenceBetweenChromosones]
+    # Step 2: Divide this difference by 149 to get the amount we need to increment by.
+    differenceBetweenChromosones = [d / 149 for d in differenceBetweenChromosones]
 
     # Here we initialise the list of target chromosones with the initial standing one.
     targetChromosones = [targetChromosoneA]
 
     # Step 3: For loop that creates the 148 inbetween chromosones. It will do this by adding the difference / 148 to the
     # angles everytime and then appending that target chromosone to the list.
-    for i in range(148):
+    for i in range(149):
         step = i + 1
         currentTargetChromosone = [a + step * d for a, d in zip(targetChromosoneA, differenceBetweenChromosones)]
 
         # After calculating the incremented frame we append it to the list before looping again
         targetChromosones.append(currentTargetChromosone)
 
-    # With all intermediary frames added, we can now add the middle (150th) frame
-    targetChromosones.append(targetChromosoneB)
-
     # Step 4: We will now take away instead of adding to complete the 2nd half of the walk cycle
-    for i in range(148):
+    for i in range(149):
         step = i + 1
         currentTargetChromosone = [a - step * d for a, d in zip(targetChromosoneB, differenceBetweenChromosones)]
 
@@ -67,13 +64,14 @@ def createTargetChromosoneList(targetChromosoneA, targetChromosoneB):
         targetChromosones.append(currentTargetChromosone)
 
     # With all intermediary frames added, we can now add the final (300th) frame
-    targetChromosones.append(targetChromosoneB)
+    targetChromosones.append(targetChromosoneA)
 
     #Checking it works
     #for i in range(len(targetChromosones)):
         #if i % 50 == 0:  # Print and plot every 10th frame for brevity
             #print(f"Frame {i}: {targetChromosones[i]}")
             #plot_spider_pose(targetChromosones[i])
+    
     # At the end of creating the full list, run an animation so you can inspect
     # the full gait sequence. This calls the local helper which temporarily
     # makes matplotlib non-blocking. If the environment doesn't support GUI
@@ -136,6 +134,12 @@ def animate_target_chromosomes(chrom_list, delay=0.1):
             if idx % 50 == 0:
                 print(f"Animating frame {idx+1}/{len(chrom_list)}")
             plot_spider_pose(chrom)
+            # Set a title that shows current frame number
+            try:
+                ax = plt.gca()
+                ax.set_title(f"Frame {idx+1} out of {len(chrom_list)}")
+            except Exception:
+                pass
             try:
                 # Pause to allow the GUI to update. Do not close the figure here; the
                 # plotting function reuses figure 1 and clears it, which produces a
