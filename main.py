@@ -57,15 +57,20 @@ def createTargetChromosoneList(targetChromosoneA, targetChromosoneB):
     # With all intermediary frames added, we can now add the middle (150th) frame
     targetChromosones.append(targetChromosoneB)
 
-    # Step 5: Once we have these initial 150 frames, we can get the final 150 by simply reversing the list and going
-    # backwards to return to the starting position
+    # Step 4: We will now take away instead of adding to complete the 2nd half of the walk cycle
+    for i in range(148):
+        step = i + 1
+        currentTargetChromosone = [a - step * d for a, d in zip(targetChromosoneB, differenceBetweenChromosones)]
 
-    targetChromosones += targetChromosones[::-1]
-    
+        # After calculating the incremented frame we append it to the list before looping again
+        targetChromosones.append(currentTargetChromosone)
+
+    # With all intermediary frames added, we can now add the final (300th) frame
+    targetChromosones.append(targetChromosoneB)
+
     #Checking it works
-
     for i in range(len(targetChromosones)):
-        if i % 30 == 0:  # Print and plot every 10th frame for brevity
+        if i % 50 == 0:  # Print and plot every 10th frame for brevity
             print(f"Frame {i}: {targetChromosones[i]}")
             plot_spider_pose(targetChromosones[i])
 
@@ -78,7 +83,6 @@ def createTargetChromosoneList(targetChromosoneA, targetChromosoneB):
 def randRadianGen():
     angle = math.radians(rd.randint(-180, 180))
     return angle
-    
 
 def createRandomPopulation(populationSize = 30):
     population = []
