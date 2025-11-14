@@ -1,5 +1,6 @@
 from genetic_algorithm import generate_target_poses
 from neural_network import Full_NN, genRanPoses
+from plot_spider_pose import plot_spider_pose
 
 def main():
     """
@@ -31,6 +32,18 @@ def main():
     print("Training Neural Network...")
     nn.train_nn(x=inputData, target=GAPoses, epochs=1000, lr=0.05)
     print("Neural Network training finished.")
+
+    #test the neural network with a new random pose
+    print("Testing Neural Network with a new random pose...")
+    testPose = genRanPoses(popSize=1)[0]
+    predictedPose = nn.FF(testPose)
+    print("Test Pose (Input):")
+    print(testPose)
+    print("Predicted Pose (Output):")
+    print(predictedPose)
+    plot_spider_pose(testPose, title="Test Pose (Input)")
+    plot_spider_pose(predictedPose, title="Predicted Pose (Output)")
+    
 
 if __name__ == "__main__":
     main()
