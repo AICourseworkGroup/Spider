@@ -31,7 +31,7 @@ def createTargetChromosone(a, b, c, isA):
     angles = l1 + l2 + l3 + l4 + r4 + r3 + r2 + r1
 
     print(f"Target chromosone: {angles} ") 
-    plot_spider_pose(angles)
+    #plot_spider_pose(angles)
 
     return angles
 
@@ -197,12 +197,33 @@ def createNewPopulation(best, secondBest, populationSize):
         newPopulation.append(newChromosoneB)
     return newPopulation
 
+def generate_target_poses():
+    """
+    Generates the 300 target poses without running the genetic algorithm.
+    """
+    #We create the two initial target chromosone poses (standing and mid stride)
+    targetChromosoneA = createTargetChromosone(math.radians(0), math.radians(-45), math.radians(-30), True)
+    plot_spider_pose(targetChromosoneA)
+    plt.title("Target Chromosome A")
+    targetChromosoneB = createTargetChromosone(math.radians(20), math.radians(-45), math.radians(-30), False)
+    plot_spider_pose(targetChromosoneB)
+    plt.title("Target Chromosome B")
+    targetChromosoneList = createTargetChromosoneList(targetChromosoneA, targetChromosoneB)
+    animate_target_chromosomes(targetChromosoneList)
+    
+    return targetChromosoneList
+
 def run_ga(generations, populationSize, mutationRate):
 
     #We create the two initial target chromosone poses (standing and mid stride)
     targetChromosoneA = createTargetChromosone(math.radians(0), math.radians(-45), math.radians(-30), True)
+    plot_spider_pose(targetChromosoneA)
+    plt.title("Target Chromosome A")
     targetChromosoneB = createTargetChromosone(math.radians(20), math.radians(-45), math.radians(-30), False)
+    plot_spider_pose(targetChromosoneB)
+    plt.title("Target Chromosome B")
     targetChromosoneList = createTargetChromosoneList(targetChromosoneA, targetChromosoneB)
+    animate_target_chromosomes(targetChromosoneList)
 
     # We create the list where the generated frames will be stored
     generatedChromosoneList = []
@@ -251,3 +272,4 @@ def run_ga(generations, populationSize, mutationRate):
 
 if __name__ == "__main__":
     run_ga(300, 300, 0.1)
+

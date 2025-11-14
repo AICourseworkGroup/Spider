@@ -15,7 +15,7 @@ from main import createTargetChromosone, createTargetChromosoneList
 from plot_spider_pose import plot_spider_pose
 
 
-def animate(chrom_list, delay=0.5):
+def animate(chrom_list, delay=0.1):
     """Animate a list of chromosones using plot_spider_pose.
 
     Each frame is shown for `delay` seconds. Uses non-blocking show where
