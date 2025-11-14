@@ -65,7 +65,7 @@ def createTargetChromosoneList(targetChromosoneA, targetChromosoneB):
     #Checking it works
 
     for i in range(len(targetChromosones)):
-        if i % 10 == 0:  # Print and plot every 10th frame for brevity
+        if i % 30 == 0:  # Print and plot every 10th frame for brevity
             print(f"Frame {i}: {targetChromosones[i]}")
             plot_spider_pose(targetChromosones[i])
 
@@ -144,22 +144,26 @@ def main(generations, populationSize, mutationRate):
     #We create the two initial target chromosone poses (standing and mid stride)
     targetChromosoneA = createTargetChromosone(math.radians(0), math.radians(-45), math.radians(-30), True)
     targetChromosoneB = createTargetChromosone(math.radians(20), math.radians(-45), math.radians(-30), False)
-    createTargetChromosoneList(targetChromosoneA, targetChromosoneB)
+    targetChromosoneList = createTargetChromosoneList(targetChromosoneA, targetChromosoneB)
 
-    population = createRandomPopulation(populationSize)
 
-    for gen in range(generations):
-        bestChromosoneIndex, secondBestChromosoneIndex, bestFitness = calculateBestFitness(population, targetChromosoneA)
-        print(f"Generation {gen}: Best Fitness = {100 - bestFitness}")
+    for chrom in range(len(targetChromosoneList)):
+        population = createRandomPopulation(populationSize)
+        targetChromosone = targetChromosoneList[chrom]
+        for gen in range(generations):
+            bestChromosoneIndex, secondBestChromosoneIndex, bestFitness = calculateBestFitness(population, targetChromosone)
+            print(f"Generation {gen}: Best Fitness = {100 - bestFitness}")
 
-        newPop = createNewPopulation(population[bestChromosoneIndex], population[secondBestChromosoneIndex], populationSize)
+            newPop = createNewPopulation(population[bestChromosoneIndex], population[secondBestChromosoneIndex], populationSize)
 
-        mutatedPop = []
-        for i in range(len(newPop)):
-            potentiallyMutatedChromosone = mutate(newPop[i], mutationRate)
-            mutatedPop.append(potentiallyMutatedChromosone)
-        
-        population = mutatedPop
+            mutatedPop = []
+            for i in range(len(newPop)):
+                potentiallyMutatedChromosone = mutate(newPop[i], mutationRate)
+                mutatedPop.append(potentiallyMutatedChromosone)
+            
+            population = mutatedPop
+        # Plot the best chromosone from the final generation for this target
+        plot_spider_pose(population[bestChromosoneIndex])
 
 if __name__ == "__main__":
     main(100, 100, 0.1)
