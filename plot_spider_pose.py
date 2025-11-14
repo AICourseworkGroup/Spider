@@ -10,12 +10,13 @@ Preserves plotting logic and prints exactly like the MATLAB version.
 """
 
 
-def plot_spider_pose(angles):
+def plot_spider_pose(angles, title=None):
     """Plot a static 3D spider pose based on joint angles.
 
     Input:
       angles: 1x24 numpy array or list of joint angles in radians
               [theta1_1, theta2_1, theta3_1, ..., theta1_8, theta2_8, theta3_8]
+      title: optional title string to display on the plot
     """
     # Parameters
     n_legs = 8
@@ -95,6 +96,10 @@ def plot_spider_pose(angles):
         offset = 0.2
         label_pos = base_pos + offset * np.array([np.cos(angle), np.sin(angle), 0.0])
         ax.text(label_pos[0], label_pos[1], label_pos[2] + 0.05, leg_labels[i], fontsize=12, fontweight='bold')
+
+    # Set the title if provided
+    if title is not None:
+        ax.set_title(title)
 
     plt.show()
 

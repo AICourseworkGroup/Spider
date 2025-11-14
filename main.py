@@ -8,7 +8,7 @@ def main():
     # Run the genetic algorithm to get the target poses (GAPoses)
     # These are the ideal poses we want the neural network to learn.
     print("Running Genetic Algorithm to generate target poses...")
-    GAPoses = run_ga(generations=100, populationSize=100, mutationRate=0.1)
+    GAPoses = run_ga(generations=300, populationSize=300, mutationRate=0.1)
     print("Genetic Algorithm finished.")
 
     # Generate random poses to be used as input for the neural network.

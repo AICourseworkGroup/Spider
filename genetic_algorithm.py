@@ -46,7 +46,7 @@ def createTargetChromosoneList(targetChromosoneA, targetChromosoneB):
     # Here we initialise the list of target chromosones with the initial standing one.
     targetChromosones = [targetChromosoneA]
 
-    # Step 3: For loop that creates the 148 inbetween chromosones. It will do this by adding the difference / 148 to the
+    # Step 3: For loop that creates the 149 inbetween chromosones. It will do this by adding the difference / 149 to the
     # angles everytime and then appending that target chromosone to the list.
     for i in range(149):
         step = i + 1
@@ -76,11 +76,11 @@ def createTargetChromosoneList(targetChromosoneA, targetChromosoneB):
     # the full gait sequence. This calls the local helper which temporarily
     # makes matplotlib non-blocking. If the environment doesn't support GUI
     # display this will quietly fail.
-    try:
-        animate_target_chromosomes(targetChromosones, delay=0.1)
-    except Exception:
+    #try:
+        #animate_target_chromosomes(targetChromosones, delay=0.1)
+    #except Exception:
         # Ignore animation errors so creation still returns the list
-        pass
+        #pass
 
 
     # This is a list of every target chromosone for all 300 frames. Every time we generate a new target we append it to 
@@ -204,14 +204,29 @@ def run_ga(generations, populationSize, mutationRate):
     targetChromosoneB = createTargetChromosone(math.radians(20), math.radians(-45), math.radians(-30), False)
     targetChromosoneList = createTargetChromosoneList(targetChromosoneA, targetChromosoneB)
 
+    # We create the list where the generated frames will be stored
+    generatedChromosoneList = []
+
     for chrom in range(len(targetChromosoneList)):
         population = createRandomPopulation(populationSize)
         targetChromosone = targetChromosoneList[chrom]
+        
+        # Track the best across all generations for this frame
+        bestChromosoneIndex = 0
+        bestFitness = float('inf')
+        bestChromosone = population[0]
+        
         for gen in range(generations):
-            bestChromosoneIndex, secondBestChromosoneIndex, bestFitness = calculateBestFitness(population, targetChromosone)
-            print(f"Generation {gen}: Best Fitness = {100 - bestFitness}")
+            genBestIndex, secondBestChromosoneIndex, genBestFitness = calculateBestFitness(population, targetChromosone)
+            print(f"Generation {gen}: Best Fitness = {100 - genBestFitness}")
+            
+            # Update global best if this generation found a better one
+            if genBestFitness < bestFitness:
+                bestFitness = genBestFitness
+                bestChromosoneIndex = genBestIndex
+                bestChromosone = population[genBestIndex]
 
-            newPop = createNewPopulation(population[bestChromosoneIndex], population[secondBestChromosoneIndex], populationSize)
+            newPop = createNewPopulation(population[genBestIndex], population[secondBestChromosoneIndex], populationSize)
 
             mutatedPop = []
             for i in range(len(newPop)):
@@ -219,10 +234,20 @@ def run_ga(generations, populationSize, mutationRate):
                 mutatedPop.append(potentiallyMutatedChromosone)
             
             population = mutatedPop
-        # Plot the best chromosone from the final generation for this target
-        plot_spider_pose(population[bestChromosoneIndex])
+        # Plot the best chromosone from ALL generations for this target
+        #title = f"Best Fitness: {100 - bestFitness}. Frame number: {chrom + 1} out of 300"
+        #plot_spider_pose(bestChromosone, title=title)
+
+        generatedChromosoneList.append(bestChromosone)
+
+    #Animate
+    try:
+        animate_target_chromosomes(generatedChromosoneList, delay=0.1)
+    except Exception:
+        #Ignore animation errors so creation still returns the list
+        pass
     
-    return targetChromosoneList
+    return generatedChromosoneList
 
 if __name__ == "__main__":
-    run_ga(100, 100, 0.1)
+    run_ga(300, 300, 0.1)
