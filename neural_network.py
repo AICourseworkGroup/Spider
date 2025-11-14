@@ -32,8 +32,8 @@ class Full_NN(object):
         self.out = out
 
     def FF(self, x):  # This method will run the network forward
-        out = x  # the input layer output is just the input
-        self.out[0] = x  # begin the linking of outputs to the class variable for back propagation. (begin with the input layer.
+        out = np.array(x, dtype=np.float32)  # the input layer output is just the input
+        self.out[0] = out  # begin the linking of outputs to the class variable for back propagation. (begin with the input layer.
         for i, w in enumerate(self.W):  # go through (iterate) the network layers via the weights variable
             Xnext = np.dot(out, w)  # calculate product between weights and output for the next output
             out = self.sigmoid(Xnext)  # use the activation function as we must per theory.
@@ -62,7 +62,7 @@ class Full_NN(object):
         for i in range(epochs):  # training loop for as many epochs as we need
             S_errors = 0  # variable to carry the error we need to report to the user
             for j, input in enumerate(x):  # iterate through the training data and inputs
-                t = target[j]
+                t = np.array(target[j], dtype=np.float32)
                 output = self.FF(input)  # use the network calculations for forward calculations.
                 e = t - output  # obtain the overall Network output error
                 self.BP(e)  # use that error to do the back propagation
