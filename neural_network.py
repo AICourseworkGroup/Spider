@@ -16,7 +16,7 @@ class Full_NN(object):
         for i in range(len(L)-1):  # we want to be able go to the next layer up so we set one minus
             w = np.random.rand(L[i], L[i+1])  # fill them up with random values, that is why we need the numpy library
             W.append(w)  # add the new values to the array.
-        self.W = W  # link the class variable to the current variable.
+        self.W = W  # assign the list of weights to the class variable.
 
         Der = []  # initialize a derivative array. This are needed to calculate the back propagation. they are the derivatives of the activation function.
         for i in range(len(L)-1):  # same reason as above for every line
@@ -32,7 +32,7 @@ class Full_NN(object):
         self.out = out
 
     def FF(self, x):  # This method will run the network forward
-        out = np.array(x, dtype=np.float32)  # the input layer output is just the input
+        out = np.array(x, dtype=np.float32)  # convert the input to a numpy array
         self.out[0] = out  # begin the linking of outputs to the class variable for back propagation. (begin with the input layer.
         for i, w in enumerate(self.W):  # go through (iterate) the network layers via the weights variable
             Xnext = np.dot(out, w)  # calculate product between weights and output for the next output
@@ -45,10 +45,9 @@ class Full_NN(object):
         for i in reversed(range(len(self.Der))):  # this is a trick allowed by Python, we can go back in reverse and essentially go backwards into the network.
             # so we are iterating backwards through the layers.
             # based on the back propagation equations
-            # dE/DWi = (y - y[i+1]) S'(x[i+1])xi
-            # S' (x[i+1]) = S(x[i+1])(1-s(x[i+1]))
-            # s(x[i+1] = x[i+1]
-            # x[i+1] = yiWi
+            # dE/dW_i = (y - y_hat) * S'(z_i) * x_i
+            # S'(z_i) = S(z_i) * (1 - S(z_i))
+            # z_{i+1} = a_i * W_i
             out = self.out[i+1]  # we get the layer output for the previous layer (we are going in reverse)
             D = Er * self.sigmoid_Der(out)  # we are applying the derivative of the activation function to get Delta. Delta is (y - y[i+1]) S'(x[i+1])
             D_fixed = D.reshape(D.shape[0], -1).T  # Python trick to turn Delta into an array of appropriate size
@@ -67,10 +66,10 @@ class Full_NN(object):
                 e = t - output  # obtain the overall Network output error
                 self.BP(e)  # use that error to do the back propagation
                 self.GD(lr)  # Do gradient descent
-                S_errors += self.msqe(t, output)  # update the overall error to show the user.
+                S_errors += (t - output) ** 2  # update the overall error to show the user.
 
             # Print mean squared quadratic error (MSQE) for this epoch so user can track training
-            epoch_loss = S_errors / len(x) if len(x) > 0 else float('nan')
+            epoch_loss = np.average(S_errors)
             print(f"Epoch {i+1}/{epochs} MSQE: {epoch_loss}")
 
     def GD(self, lr=0.05):  # Gradient descent
@@ -94,7 +93,7 @@ class Full_NN(object):
 
 
 def randAngGen():
-    angle = random() * np.pi / -4 # random angle between 0 and 45 degrees in radians
+    angle = (random() * np.pi / 2) - (np.pi / 4) # random angle between -45 and 45 degrees in radians
     return angle
 
 def genRanPoses(popSize=3000):

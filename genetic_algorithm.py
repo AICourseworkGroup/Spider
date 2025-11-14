@@ -7,7 +7,7 @@ def createTargetChromosone(a, b, c, isA):
 
     # isA checks whether the target chromosone being made is for the standing pose or the mid walk pose and sets the values
     # of the a angles to positive or negative accordingly.
-    if isA == True:
+    if isA:
         l1 = [a, b, c]
         l2 = [a, b, c]
         l3 = [a, b, c]
@@ -165,7 +165,7 @@ def calculateBestFitness(population, targetChromosone):
     bestIndex = 0
     bestFitness = float('inf')
     secondBestFitness = float('inf')
-    secondBestIndex = None
+    secondBestIndex = 0
     for i, chrom in enumerate(population):
         currentFitness = calculateFitness(chrom, targetChromosone)
         if currentFitness < bestFitness:
@@ -176,11 +176,11 @@ def calculateBestFitness(population, targetChromosone):
     return bestIndex, secondBestIndex, bestFitness
 
 
-def crossover(chromasoneA, chromasoneB):
-    crossoverPoint = rd.randint(1, len(chromasoneA) - 1)
-    newChromosone1 = chromasoneA[:crossoverPoint] + chromasoneB[crossoverPoint:]
-    newChromosone2 = chromasoneB[:crossoverPoint] + chromasoneA[crossoverPoint:]
-    return newChromosone1, newChromosone2
+def crossover(chromosomeA, chromosomeB):
+    crossoverPoint = rd.randint(1, len(chromosomeA) - 1)
+    newChromosome1 = chromosomeA[:crossoverPoint] + chromosomeB[crossoverPoint:]
+    newChromosome2 = chromosomeB[:crossoverPoint] + chromosomeA[crossoverPoint:]
+    return newChromosome1, newChromosome2
 
 def mutate(chromosone, mutationRate):
     mutatedChromosone = chromosone.copy()
@@ -192,9 +192,9 @@ def mutate(chromosone, mutationRate):
 def createNewPopulation(best, secondBest, populationSize):
     newPopulation = []
     for i in range(int(populationSize / 2)):
-        newChromosoneA, newChromosoneB = crossover(best, secondBest)
-        newPopulation.append(newChromosoneA)
-        newPopulation.append(newChromosoneB)
+        newChromosomeA, newChromosomeB = crossover(best, secondBest)
+        newPopulation.append(newChromosomeA)
+        newPopulation.append(newChromosomeB)
     return newPopulation
 
 def generate_target_poses():
@@ -232,10 +232,7 @@ def run_ga(generations, populationSize, mutationRate):
         population = createRandomPopulation(populationSize)
         targetChromosone = targetChromosoneList[chrom]
         
-        # Track the best across all generations for this frame
-        bestChromosoneIndex = 0
         bestFitness = float('inf')
-        bestChromosone = population[0]
         
         for gen in range(generations):
             genBestIndex, secondBestChromosoneIndex, genBestFitness = calculateBestFitness(population, targetChromosone)
@@ -244,7 +241,6 @@ def run_ga(generations, populationSize, mutationRate):
             # Update global best if this generation found a better one
             if genBestFitness < bestFitness:
                 bestFitness = genBestFitness
-                bestChromosoneIndex = genBestIndex
                 bestChromosone = population[genBestIndex]
 
             newPop = createNewPopulation(population[genBestIndex], population[secondBestChromosoneIndex], populationSize)

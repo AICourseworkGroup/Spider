@@ -11,7 +11,7 @@ import argparse
 import math
 import matplotlib.pyplot as plt
 
-from main import createTargetChromosone, createTargetChromosoneList
+from genetic_algorithm import createTargetChromosone, createTargetChromosoneList
 from plot_spider_pose import plot_spider_pose
 
 

@@ -10,14 +10,12 @@ Preserves plotting logic and prints exactly like the MATLAB version.
 """
 
 
-def plot_spider_pose(angles, title=None):
 def plot_spider_pose(angles, title="Spider Pose"):
     """Plot a static 3D spider pose based on joint angles.
 
     Input:
       angles: 1x24 numpy array or list of joint angles in radians
               [theta1_1, theta2_1, theta3_1, ..., theta1_8, theta2_8, theta3_8]
-      title: optional title string to display on the plot
       title: The title for the plot.
     """
     # Parameters
