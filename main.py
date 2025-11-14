@@ -6,7 +6,7 @@ def main():
     Main function to run the genetic algorithm and train the neural network.
     """
     # Run the genetic algorithm to get the target poses (GAPoses)
-    # These are the ideal poses we want the neural network to learn.
+    # These are also the ideal poses we want the neural network to learn.
     print("Running Genetic Algorithm to generate target poses...")
     GAPoses = run_ga(generations=100, populationSize=100, mutationRate=0.1)
     print("Genetic Algorithm finished.")
