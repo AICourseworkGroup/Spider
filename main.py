@@ -1,5 +1,6 @@
 import random as rd
 import math
+import matplotlib.pyplot as plt
 from plot_spider_pose import plot_spider_pose
 
 def createTargetChromosone(a, b, c, isA):
@@ -69,10 +70,20 @@ def createTargetChromosoneList(targetChromosoneA, targetChromosoneB):
     targetChromosones.append(targetChromosoneB)
 
     #Checking it works
-    for i in range(len(targetChromosones)):
-        if i % 50 == 0:  # Print and plot every 10th frame for brevity
-            print(f"Frame {i}: {targetChromosones[i]}")
-            plot_spider_pose(targetChromosones[i])
+    #for i in range(len(targetChromosones)):
+        #if i % 50 == 0:  # Print and plot every 10th frame for brevity
+            #print(f"Frame {i}: {targetChromosones[i]}")
+            #plot_spider_pose(targetChromosones[i])
+    # At the end of creating the full list, run an animation so you can inspect
+    # the full gait sequence. This calls the local helper which temporarily
+    # makes matplotlib non-blocking. If the environment doesn't support GUI
+    # display this will quietly fail.
+    try:
+        animate_target_chromosomes(targetChromosones, delay=0.1)
+    except Exception:
+        # Ignore animation errors so creation still returns the list
+        pass
+
 
     # This is a list of every target chromosone for all 300 frames. Every time we generate a new target we append it to 
     # this list. When we run the genetic algorithm we'll do a for loop where we go to the next target chromosone every time
@@ -101,6 +112,45 @@ def createRandomPopulation(populationSize = 30):
         population.append(angles)
 
     return population
+
+
+def animate_target_chromosomes(chrom_list, delay=0.1):
+    """Animate a list of target chromosones using plot_spider_pose.
+
+    Temporarily makes matplotlib's show non-blocking so we can call
+    `plot_spider_pose` without modifying that module. Each frame is displayed
+    for `delay` seconds and then the figure is closed.
+    """
+    orig_show = plt.show
+
+    def _non_blocking_show(*args, **kwargs):
+        try:
+            return orig_show(block=False)
+        except TypeError:
+            return orig_show(*args, **kwargs)
+
+    plt.show = _non_blocking_show
+    try:
+        for idx, chrom in enumerate(chrom_list):
+            # keep output brief
+            if idx % 50 == 0:
+                print(f"Animating frame {idx+1}/{len(chrom_list)}")
+            plot_spider_pose(chrom)
+            try:
+                # Pause to allow the GUI to update. Do not close the figure here; the
+                # plotting function reuses figure 1 and clears it, which produces a
+                # smooth animation when we leave the window open.
+                plt.pause(delay)
+            except Exception:
+                # Non-GUI backends may not support pause; ignore
+                pass
+        # Close all figures at the end of the animation
+        try:
+            plt.close('all')
+        except Exception:
+            pass
+    finally:
+        plt.show = orig_show
 
 def calculateFitness(inputAngles, targetChromosone):
     diffs = [abs(t - i) for t, i in zip(targetChromosone, inputAngles)]
