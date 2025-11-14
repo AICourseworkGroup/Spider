@@ -146,9 +146,9 @@ def main(generations, populationSize, mutationRate):
     targetChromosoneB = createTargetChromosone(math.radians(20), math.radians(-45), math.radians(-30), False)
     targetChromosoneList = createTargetChromosoneList(targetChromosoneA, targetChromosoneB)
 
-    population = createRandomPopulation(populationSize)
 
     for chrom in range(len(targetChromosoneList)):
+        population = createRandomPopulation(populationSize)
         targetChromosone = targetChromosoneList[chrom]
         for gen in range(generations):
             bestChromosoneIndex, secondBestChromosoneIndex, bestFitness = calculateBestFitness(population, targetChromosone)
@@ -166,4 +166,4 @@ def main(generations, populationSize, mutationRate):
         plot_spider_pose(population[bestChromosoneIndex])
 
 if __name__ == "__main__":
-    main(500, 500, 0.1)
+    main(100, 100, 0.1)
