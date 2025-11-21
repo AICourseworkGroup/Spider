@@ -5,8 +5,8 @@ from plot_spider_pose import plot_spider_pose
 
 def createTargetChromosome(a, b, c, isA):
 
-    # isA checks whether the target chromosome being made is for the standing pose or the mid walk pose and sets the values
-    # of the a angles to positive or negative accordingly.
+    # isA checks whether the target chromosome being made is for the standing pose or the mid walk pose and sets 
+    # the values of the a angles to positive or negative accordingly.
     if isA:
         l1 = [a, b, c]
         l2 = [a, b, c]
@@ -31,7 +31,6 @@ def createTargetChromosome(a, b, c, isA):
     angles = l1 + l2 + l3 + l4 + r4 + r3 + r2 + r1
 
     print(f"Target chromosome: {angles} ") 
-    #plot_spider_pose(angles)
 
     return angles
 
@@ -58,8 +57,8 @@ def createTargetChromosomeList(targetChromosomeA, targetChromosomeB):
     # Here we initialise the list of target chromosomes with the initial standing one.
     targetChromosomes = [targetChromosomeA]
 
-    # Step 3: For loop that creates the 149 inbetween chromosomes. It will do this by adding the difference / 149 to the
-    # angles everytime and then appending that target chromosome to the list.
+    # Step 3: For loop that creates the 149 inbetween chromosomes. It will do this by adding 
+    # the difference / 149 to the angles everytime and then appending that new target chromosome to the list.
     for i in range(149):
         step = i + 1
         currentTargetChromosome = [a + step * d for a, d in zip(targetChromosomeA, differenceBetweenChromosomes)]
@@ -77,27 +76,21 @@ def createTargetChromosomeList(targetChromosomeA, targetChromosomeB):
 
     # With all intermediary frames added, we can now add the final (300th) frame
     targetChromosomes.append(targetChromosomeA)
-    
-    # At the end of creating the full list, run an animation so you can inspect
-    # the full gait sequence. This calls the local helper which temporarily
-    # makes matplotlib non-blocking. If the environment doesn't support GUI
-    # display this will quietly fail.
-    #try:
-        #animate_target_chromosomes(targetChromosomes, delay=0.1)
-    #except Exception:
-        # Ignore animation errors so creation still returns the list
-        #pass
 
-
-    # This is a list of every target chromosome for all 300 frames. Every time we generate a new target we append it to 
-    # this list. When we run the genetic algorithm we'll do a for loop where we go to the next target chromosome every time
-    # that i increments.
+    # This is a list of every target chromosome for all 300 frames. Every time we generate a new target we 
+    # append it to this list. When we run the genetic algorithm we'll do a for loop where we go to the next 
+    # target chromosome every time that i increments.
     
     return targetChromosomes
 
+
+# This is a function we use to generate a random angle in radians. We call this to avoid redundant code.
 def randRadianGen():
     angle = math.radians(rd.randint(-180, 180))
     return angle
+
+# In this function we create a random population for the genetic algorithm. We call randRadianGen to generate 
+# each angle. 
 
 def createRandomPopulation(populationSize = 30):
     population = []
@@ -162,10 +155,20 @@ def animateTargetChromosomes(chrom_list, delay=0.1):
     finally:
         plt.show = orig_show
 
+
+# This is our function for calculating the fitness of a chromosome. We do this by taking the generated 
+# chromosome angles and taking away the generated angles. The closer to 0, the more they overlap, the more 
+# fit they are.
+
 def calculateFitness(inputAngles, targetChromosome):
     diffs = [abs(t - i) for t, i in zip(targetChromosome, inputAngles)]
     fitness = sum(diffs)
     return fitness
+
+# This is a function for calculating the best fitness out of a population. It first sets a bestFitness as 
+# infinity so that any fitness calculated will be better. It then loops through the population, calculating the 
+# fitness of each chromosome. If the fitness is better than the bestFitness, it updates bestFitness and 
+# bestIndex. It also keeps track of the second best fitness and index for when we do crossover later.
 
 def calculateBestFitness(population, targetChromosome):
     bestIndex = 0
@@ -181,19 +184,26 @@ def calculateBestFitness(population, targetChromosome):
             bestIndex = i
     return bestIndex, secondBestIndex, bestFitness
 
-
+# Here we are doing crossover between two chromosomes to create two new ones. We randomly select a crossover 
+# point and swap the genes after that point. The best two parents are passed in as arguments.
 def crossover(chromosomeA, chromosomeB):
     crossoverPoint = rd.randint(1, len(chromosomeA) - 1)
     newChromosome1 = chromosomeA[:crossoverPoint] + chromosomeB[crossoverPoint:]
     newChromosome2 = chromosomeB[:crossoverPoint] + chromosomeA[crossoverPoint:]
     return newChromosome1, newChromosome2
 
+# This is our mutation function. It goes through each angle in the chromosome and then generate a random number.
+# If the random number is less than the mutation rate, it mutates that angle by generating a new random angle.
 def mutate(chromosome, mutationRate):
     mutatedChromosome = chromosome.copy()
     for i in range(len(mutatedChromosome)):
         if rd.random() < mutationRate:
             mutatedChromosome[i] = randRadianGen()
     return mutatedChromosome
+
+# We create a new population by doing crossover between the best and second best chromosomes.
+# 15 of the new created with the first half of A and second half of B, and 15 with first half of B and 
+# second half of A.
 
 def createNewPopulation(best, secondBest, populationSize):
     newPopulation = []
@@ -234,10 +244,7 @@ def runGA(generations, populationSize, mutationRate, GAPoses):
                 mutatedPop.append(potentiallyMutatedChromosome)
             
             population = mutatedPop
-        # Plot the best chromosome from ALL generations for this target
-        #title = f"Best Fitness: {100 - bestFitness}. Frame number: {chrom + 1} out of 300"
-        #plot_spider_pose(bestChromosome, title=title)
 
         generatedChromosomeList.append(bestChromosome)
-    return generatedChromosomeList
 
+    return generatedChromosomeList
