@@ -239,16 +239,5 @@ def runGA(generations, populationSize, mutationRate, GAPoses):
         #plot_spider_pose(bestChromosome, title=title)
 
         generatedChromosomeList.append(bestChromosome)
-
-    #Animate
-    try:
-        animateTargetChromosomes(generatedChromosomeList, delay=0.1)
-    except Exception:
-        #Ignore animation errors so creation still returns the list
-        pass
-    
     return generatedChromosomeList
-
-if __name__ == "__main__":
-    runGA(100, 300, 0.1)
 
