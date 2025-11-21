@@ -77,17 +77,6 @@ def createTargetChromosomeList(targetChromosomeA, targetChromosomeB):
 
     # With all intermediary frames added, we can now add the final (300th) frame
     targetChromosomes.append(targetChromosomeA)
-    
-    # At the end of creating the full list, run an animation so you can inspect
-    # the full gait sequence. This calls the local helper which temporarily
-    # makes matplotlib non-blocking. If the environment doesn't support GUI
-    # display this will quietly fail.
-    #try:
-        #animate_target_chromosomes(targetChromosomes, delay=0.1)
-    #except Exception:
-        # Ignore animation errors so creation still returns the list
-        #pass
-
 
     # This is a list of every target chromosome for all 300 frames. Every time we generate a new target we append it to 
     # this list. When we run the genetic algorithm we'll do a for loop where we go to the next target chromosome every time
@@ -234,10 +223,8 @@ def runGA(generations, populationSize, mutationRate, GAPoses):
                 mutatedPop.append(potentiallyMutatedChromosome)
             
             population = mutatedPop
-        # Plot the best chromosome from ALL generations for this target
-        #title = f"Best Fitness: {100 - bestFitness}. Frame number: {chrom + 1} out of 300"
-        #plot_spider_pose(bestChromosome, title=title)
 
         generatedChromosomeList.append(bestChromosome)
+
     return generatedChromosomeList
 

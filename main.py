@@ -18,6 +18,9 @@ def main():
     # These are also the ideal poses we want the neural network to learn.
     targetChromosomeA = createTargetChromosome(math.radians(0), math.radians(-45), math.radians(-30), True)
     targetChromosomeB = createTargetChromosome(math.radians(20), math.radians(-45), math.radians(-30), False)
+
+    print(targetChromosomeA)
+
     print("Running Genetic Algorithm to generate target poses...")
     GATargetPoses = createTargetChromosomeList(targetChromosomeA, targetChromosomeB)
     print("Target poses generated.")
@@ -80,22 +83,20 @@ def main():
         choice = input("Enter your choice: ")
 
         if choice == '1':
-            #Animate
-            try:
-                animateTargetChromosomes(GATargetPoses, delay=0.1)
-            except Exception:
-            #Ignore animation errors so creation still returns the list
-                pass
+            
+            animateTargetChromosomes(GATargetPoses, delay=0.1)
+            
         elif choice == '2':
-            try:
-                animateTargetChromosomes(GAPoses, delay=0.1)
-            except Exception:
-            #Ignore animation errors so creation still returns the list
-                pass
+
+            animateTargetChromosomes(GAPoses, delay=0.1)
+            
         elif choice == '3':
+
             menuLoop = False
             print("Exiting program.")
+
         else:
+
             print("Invalid choice. Please try again.")
     
     # Run PyTorch comparison with the same data
