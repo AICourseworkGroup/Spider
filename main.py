@@ -1,4 +1,8 @@
-from genetic_algorithm import generate_target_poses, run_ga
+import random as rd
+import math
+import matplotlib.pyplot as plt
+
+from genetic_algorithm import createTargetChromosome, createTargetChromosomeList, runGA
 from neural_network import Full_NN, genRanPoses
 from plot_spider_pose import plot_spider_pose
 
@@ -9,8 +13,10 @@ def main():
     # Generate the target poses (GAPoses)
     # These will be what the genetic algorithm aims to match for each chromosome.
     # These are also the ideal poses we want the neural network to learn.
+    targetChromosomeA = createTargetChromosome(math.radians(0), math.radians(-45), math.radians(-30), True)
+    targetChromosomeB = createTargetChromosome(math.radians(20), math.radians(-45), math.radians(-30), False)
     print("Running Genetic Algorithm to generate target poses...")
-    GAPoses = generate_target_poses()
+    GAPoses = createTargetChromosomeList(targetChromosomeA, targetChromosomeB)
     print("Target poses generated.")
 
     # Next we run the genetic algorithm. We ask the user to enter their own
@@ -21,7 +27,7 @@ def main():
     populationSize = int(input("Enter the population size for the GA (Recommended: 300): "))
     mutationRate = float(input("Enter the mutation rate for the GA (Recommened 0.01): "))
 
-    run_ga(maxGenerations, populationSize, mutationRate, GAPoses)
+    runGA(maxGenerations, populationSize, mutationRate, GAPoses)
 
     # Generate random poses to be used as input for the neural network.
     # The number of input poses should match the number of target poses.
