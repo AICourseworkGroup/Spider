@@ -219,7 +219,7 @@ def runGA(generations, populationSize, mutationRate, GAPoses):
         
         for gen in range(generations):
             genBestIndex, secondBestChromosomeIndex, genBestFitness = calculateBestFitness(population, targetChromosome)
-            print(f"Generation {gen}: Best Fitness = {100 - genBestFitness}")
+            print(f"Frame {chrom + 1}/300 - Generation {gen}: Best Fitness = {100 - genBestFitness}")
             
             # Update global best if this generation found a better one
             if genBestFitness < bestFitness:
