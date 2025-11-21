@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from genetic_algorithm import createTargetChromosome, createTargetChromosomeList, runGA
 from neural_network import Full_NN, genRanPoses
 from plot_spider_pose import plot_spider_pose
+from pytorch import run_pytorch_comparison
 import matplotlib.pyplot as plt
 
 def main():
@@ -66,6 +67,10 @@ def main():
     plot_spider_pose(predictedPose, title="Predicted Pose (Output)")
     plt.pause(3)  # Display for 3 seconds
     plt.close()   # Close the figure
+    
+    # Run PyTorch comparison with the same data
+    print("\n--- Running PyTorch Comparison ---")
+    run_pytorch_comparison(inputData, GAPoses, epochs=1000, lr=0.001)
     
 
 if __name__ == "__main__":
