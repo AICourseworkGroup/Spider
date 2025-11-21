@@ -6,6 +6,7 @@ from genetic_algorithm import createTargetChromosome, createTargetChromosomeList
 from neural_network import Full_NN, genRanPoses
 from genetic_algorithm import animateTargetChromosomes
 from plot_spider_pose import plot_spider_pose
+from pytorch import run_pytorch_nn
 import matplotlib.pyplot as plt
 
 def main():
@@ -69,6 +70,26 @@ def main():
     plt.close()   # Close the figure
     
     plot_spider_pose(predictedPose, title="Predicted Pose (Output)")
+    plt.pause(3)  # Display for 3 seconds
+    plt.close()   # Close the figure
+
+    # Train and test PyTorch network
+    print("\n=== Training PyTorch Neural Network ===")
+    pytorch_model = run_pytorch_nn(inputData, GAPoses, epochs=1000, lr=0.001)
+    
+    # Test PyTorch network with same test pose
+    print("\nTesting PyTorch Network with a new random pose...")
+    testPose2 = genRanPoses(popSize=1)[0]
+    pytorch_prediction = pytorch_model.predict(testPose2)
+    print("Test Pose (Input):")
+    print(testPose2)
+    print("PyTorch Predicted Pose (Output):")
+    print(pytorch_prediction)
+    plot_spider_pose(testPose2, title="PyTorch Test Pose (Input)")
+    plt.pause(3)  # Display for 3 seconds
+    plt.close()   # Close the figure
+    
+    plot_spider_pose(pytorch_prediction, title="PyTorch Predicted Pose (Output)")
     plt.pause(3)  # Display for 3 seconds
     plt.close()   # Close the figure
 
