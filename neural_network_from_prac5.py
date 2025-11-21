@@ -14,7 +14,9 @@ class Full_NN(object):
         # the network in the format we need it. i.e array of the format [how many inputs, how many hidden layers, how many outputs]
         W = []  # initialize a weight array
         for i in range(len(L)-1):  # we want to be able go to the next layer up so we set one minus
-            w = np.random.rand(L[i], L[i+1])  # fill them up with random values, that is why we need the numpy library
+            # Use Xavier initialization: weights scaled by sqrt(1 / input_size)
+            # This prevents vanishing/exploding gradients in deep networks
+            w = np.random.randn(L[i], L[i+1]) * np.sqrt(2.0 / L[i])
             W.append(w)  # add the new values to the array.
         self.W = W  # assign the list of weights to the class variable.
 
@@ -36,7 +38,11 @@ class Full_NN(object):
         self.out[0] = out  # begin the linking of outputs to the class variable for back propagation. (begin with the input layer.
         for i, w in enumerate(self.W):  # go through (iterate) the network layers via the weights variable
             Xnext = np.dot(out, w)  # calculate product between weights and output for the next output
-            out = self.sigmoid(Xnext)  # use the activation function as we must per theory.
+            # Apply sigmoid activation to all layers EXCEPT the last one
+            if i < len(self.W) - 1:
+                out = self.sigmoid(Xnext)  # use the activation function for hidden layers
+            else:
+                out = Xnext  # No activation for output layer (linear output for regression)
             self.out[i+1] = out  # pass the result to the class variable to preserve for later (when we do the back propagation.
         return out  # return the outputs of the layers.
 
@@ -46,10 +52,18 @@ class Full_NN(object):
             # so we are iterating backwards through the layers.
             # based on the back propagation equations
             # dE/dW_i = (y - y_hat) * S'(z_i) * x_i
-            # S'(z_i) = S(z_i) * (1 - S(z_i))
+            # S'(z_i) = S(z_i) * (1 - S(z_i)) for sigmoid
+            # S'(z_i) = 1 for linear (output layer)
             # z_{i+1} = a_i * W_i
             out = self.out[i+1]  # we get the layer output for the previous layer (we are going in reverse)
-            D = Er * self.sigmoid_Der(out)  # we are applying the derivative of the activation function to get Delta. Delta is (y - y[i+1]) S'(x[i+1])
+            
+            # For output layer (last layer), derivative is 1 (linear activation)
+            # For hidden layers, use sigmoid derivative
+            if i == len(self.Der) - 1:
+                D = Er  # Linear activation derivative is 1, so just use error directly
+            else:
+                D = Er * self.sigmoid_Der(out)  # Apply sigmoid derivative for hidden layers
+            
             D_fixed = D.reshape(D.shape[0], -1).T  # Python trick to turn Delta into an array of appropriate size
             this_out = self.out[i]  # current layer output.
             this_out = this_out.reshape(this_out.shape[0], -1)  # reshape as before to get column array suitable for the multiplication we need.
