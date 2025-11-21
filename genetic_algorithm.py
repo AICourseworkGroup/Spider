@@ -213,24 +213,17 @@ def generate_target_poses():
     
     return targetChromosoneList
 
-def run_ga(generations, populationSize, mutationRate):
+def run_ga(generations, populationSize, mutationRate, GAPoses):
 
-    #We create the two initial target chromosone poses (standing and mid stride)
-    targetChromosoneA = createTargetChromosone(math.radians(0), math.radians(-45), math.radians(-30), True)
-    plot_spider_pose(targetChromosoneA)
-    plt.title("Target Chromosome A")
-    targetChromosoneB = createTargetChromosone(math.radians(20), math.radians(-45), math.radians(-30), False)
-    plot_spider_pose(targetChromosoneB)
-    plt.title("Target Chromosome B")
-    targetChromosoneList = createTargetChromosoneList(targetChromosoneA, targetChromosoneB)
-    animate_target_chromosomes(targetChromosoneList)
+    # The initial two target chromosones are generated in the main and then
+    # passed to here as GAPoses
 
     # We create the list where the generated frames will be stored
     generatedChromosoneList = []
 
-    for chrom in range(len(targetChromosoneList)):
+    for chrom in range(len(GAPoses)):
         population = createRandomPopulation(populationSize)
-        targetChromosone = targetChromosoneList[chrom]
+        targetChromosone = GAPoses[chrom]
         
         bestFitness = float('inf')
         
@@ -267,5 +260,5 @@ def run_ga(generations, populationSize, mutationRate):
     return generatedChromosoneList
 
 if __name__ == "__main__":
-    run_ga(300, 300, 0.1)
+    run_ga(100, 300, 0.1)
 
