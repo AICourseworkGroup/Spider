@@ -1,12 +1,17 @@
 import random as rd
 import math
 import matplotlib.pyplot as plt
-from plot_spider_pose import plot_spider_pose
+from Spider.spider_pose import plot_spider_pose
 
 def createTargetChromosome(a, b, c, isA):
-
-    # isA checks whether the target chromosome being made is for the standing pose or the mid walk pose and sets 
-    # the values of the a angles to positive or negative accordingly.
+    """
+        Initialize the neural network.
+        
+        Args:
+            input_size: Number of input features (24 angles)
+            hidden_sizes: List of hidden layer sizes
+            output_size: Number of output features (24 angles)
+        """
     if isA:
         l1 = [a, b, c]
         l2 = [a, b, c]

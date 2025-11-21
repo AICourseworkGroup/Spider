@@ -3,27 +3,27 @@ import math
 import matplotlib.pyplot as plt
 
 from genetic_algorithm import createTargetChromosome, createTargetChromosomeList, runGA
-from neural_network_from_prac5 import Full_NN, genRanPoses
+from nn_self import Full_NN, genRanPoses
 from genetic_algorithm import animateTargetChromosomes
-from plot_spider_pose import plot_spider_pose
-from pytorch import run_pytorch_nn
+from Spider.spider_pose import plot_spider_pose
+from Spider.nn_pytorch import run_pytorch_nn
 import matplotlib.pyplot as plt
+
+from helpers import display_step_1
 
 def main():
     """
     Main function to generate target poses and train the neural network.
     Shows results/plots as it progresses through each step.
     """
-    print("\n" + "="*60)
-    print("STEP 1: Creating and Displaying Target Chromosomes")
-    print("="*60)
+    display_step_1()
     
-    # Generate the target poses (GAPoses)
+    # Target poses (GAPoses)
     targetChromosomeA = createTargetChromosome(math.radians(0), math.radians(-45), math.radians(-30), True)
     targetChromosomeB = createTargetChromosome(math.radians(20), math.radians(-45), math.radians(-30), False)
     
-    # Generate full target walk cycle (this will display A and B)
-    GATargetPoses = createTargetChromosomeList(targetChromosomeA, targetChromosomeB) # this also displays/plots the two poses A and B
+    # Walk cycle (display A and B)
+    GATargetPoses = createTargetChromosomeList(targetChromosomeA, targetChromosomeB)
     print(f"\nGenerated {len(GATargetPoses)} target frames for full walk cycle.")
 
     print("\n" + "="*60)
@@ -55,7 +55,7 @@ def main():
     animateTargetChromosomes("GA Chromosome", GAPoses, delay=0.1)
     print("Animation complete.")
 
-    # Generate random poses for neural network training
+    # Generate random poses
     num_poses = len(GAPoses)
     print(f"\nGenerating {num_poses} random input poses for neural network training...")
     inputData = genRanPoses(popSize=num_poses)
