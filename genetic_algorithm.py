@@ -253,3 +253,4 @@ def runGA(generations, populationSize, mutationRate, GAPoses):
         generatedChromosomeList.append(bestChromosome)
 
     return generatedChromosomeList
+
