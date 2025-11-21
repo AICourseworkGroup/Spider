@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 from genetic_algorithm import createTargetChromosome, createTargetChromosomeList, runGA
 from neural_network import Full_NN, genRanPoses
+from genetic_algorithm import animateTargetChromosomes
 from plot_spider_pose import plot_spider_pose
 import matplotlib.pyplot as plt
 
@@ -17,7 +18,7 @@ def main():
     targetChromosomeA = createTargetChromosome(math.radians(0), math.radians(-45), math.radians(-30), True)
     targetChromosomeB = createTargetChromosome(math.radians(20), math.radians(-45), math.radians(-30), False)
     print("Running Genetic Algorithm to generate target poses...")
-    GAPoses = createTargetChromosomeList(targetChromosomeA, targetChromosomeB)
+    GATargetPoses = createTargetChromosomeList(targetChromosomeA, targetChromosomeB)
     print("Target poses generated.")
 
     # Next we run the genetic algorithm. We ask the user to enter their own
@@ -28,7 +29,8 @@ def main():
     populationSize = int(input("Enter the population size for the GA (Recommended: 300): "))
     mutationRate = float(input("Enter the mutation rate for the GA (Recommened 0.01): "))
 
-    runGA(maxGenerations, populationSize, mutationRate, GAPoses)
+    # We run the GA to generate our chromosomes according to the target poses.
+    GAPoses = runGA(maxGenerations, populationSize, mutationRate, GATargetPoses)
 
     # Generate random poses to be used as input for the neural network.
     # The number of input poses should match the number of target poses.
@@ -66,6 +68,34 @@ def main():
     plot_spider_pose(predictedPose, title="Predicted Pose (Output)")
     plt.pause(3)  # Display for 3 seconds
     plt.close()   # Close the figure
+
+    menuLoop = True
+
+    while menuLoop:
+        print("\nMenu:")
+        print("1. Display animation of target chromosomes")
+        print("2. Display animation of GA generated chromosomes")
+        print("3. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            #Animate
+            try:
+                animateTargetChromosomes(GATargetPoses, delay=0.1)
+            except Exception:
+            #Ignore animation errors so creation still returns the list
+                pass
+        elif choice == '2':
+            try:
+                animateTargetChromosomes(GAPoses, delay=0.1)
+            except Exception:
+            #Ignore animation errors so creation still returns the list
+                pass
+        elif choice == '3':
+            menuLoop = False
+            print("Exiting program.")
+        else:
+            print("Invalid choice. Please try again.")
     
 
 if __name__ == "__main__":
