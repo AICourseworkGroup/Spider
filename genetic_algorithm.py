@@ -112,7 +112,7 @@ def createRandomPopulation(populationSize = 30):
     return population
 
 
-def animate_target_chromosomes(chrom_list, delay=0.1):
+def animate_target_chromosomes(chrom_list, delay=0.1, is_target=True):
     """Animate a list of target chromosones using plot_spider_pose.
 
     Temporarily makes matplotlib's show non-blocking so we can call
@@ -137,7 +137,10 @@ def animate_target_chromosomes(chrom_list, delay=0.1):
             # Set a title that shows current frame number
             try:
                 ax = plt.gca()
-                ax.set_title(f"Frame {idx+1} out of {len(chrom_list)}")
+                if is_target:
+                    ax.set_title(f"Target Pose {idx+1} out of {len(chrom_list)}")
+                else:
+                    ax.set_title(f"Frame {idx+1} out of {len(chrom_list)}")
             except Exception:
                 pass
             try:
@@ -237,7 +240,7 @@ def run_ga(generations, populationSize, mutationRate, GAPoses):
         
         for gen in range(generations):
             genBestIndex, secondBestChromosoneIndex, genBestFitness = calculateBestFitness(population, targetChromosone)
-            print(f"Generation {gen}: Best Fitness = {100 - genBestFitness}")
+            print(f"Frame {chrom + 1}/300 - Generation {gen}: Best Fitness = {100 - genBestFitness}")
             
             # Update global best if this generation found a better one
             if genBestFitness < bestFitness:
@@ -260,7 +263,7 @@ def run_ga(generations, populationSize, mutationRate, GAPoses):
 
     #Animate
     try:
-        animate_target_chromosomes(generatedChromosoneList, delay=0.1)
+        animate_target_chromosomes(generatedChromosoneList, delay=0.1, is_target=False)
     except Exception:
         #Ignore animation errors so creation still returns the list
         pass
