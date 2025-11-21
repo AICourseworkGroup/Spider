@@ -113,7 +113,7 @@ def createRandomPopulation(populationSize = 30):
     return population
 
 
-def animateTargetChromosomes(chrom_list, delay=0.1):
+def animateTargetChromosomes(chrom_list, delay=0.1, is_target=True):
     """Animate a list of target chromosomes using plot_spider_pose.
 
     Temporarily makes matplotlib's show non-blocking so we can call
@@ -138,7 +138,10 @@ def animateTargetChromosomes(chrom_list, delay=0.1):
             # Set a title that shows current frame number
             try:
                 ax = plt.gca()
-                ax.set_title(f"Frame {idx+1} out of {len(chrom_list)}")
+                if is_target:
+                    ax.set_title(f"Target Pose {idx+1} out of {len(chrom_list)}")
+                else:
+                    ax.set_title(f"Frame {idx+1} out of {len(chrom_list)}")
             except Exception:
                 pass
             try:
@@ -149,8 +152,10 @@ def animateTargetChromosomes(chrom_list, delay=0.1):
             except Exception:
                 # Non-GUI backends may not support pause; ignore
                 pass
-        # Close all figures at the end of the animation
+        # Animation finished, wait 3 seconds before closing
+        print("Animation finished. Waiting 3 seconds before closing...")
         try:
+            plt.pause(3)
             plt.close('all')
         except Exception:
             pass
@@ -214,7 +219,7 @@ def runGA(generations, populationSize, mutationRate, GAPoses):
         
         for gen in range(generations):
             genBestIndex, secondBestChromosomeIndex, genBestFitness = calculateBestFitness(population, targetChromosome)
-            print(f"Generation {gen}: Best Fitness = {100 - genBestFitness}")
+            print(f"Frame {chrom + 1}/300 - Generation {gen}: Best Fitness = {100 - genBestFitness}")
             
             # Update global best if this generation found a better one
             if genBestFitness < bestFitness:
@@ -237,7 +242,7 @@ def runGA(generations, populationSize, mutationRate, GAPoses):
 
     #Animate
     try:
-        animateTargetChromosomes(generatedChromosomeList, delay=0.1)
+        animateTargetChromosomes(generatedChromosomeList, delay=0.1, is_target=False)
     except Exception:
         #Ignore animation errors so creation still returns the list
         pass

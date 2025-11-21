@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from genetic_algorithm import createTargetChromosome, createTargetChromosomeList, runGA
 from neural_network import Full_NN, genRanPoses
 from plot_spider_pose import plot_spider_pose
+import matplotlib.pyplot as plt
 
 def main():
     """
@@ -59,7 +60,12 @@ def main():
     print("Predicted Pose (Output):")
     print(predictedPose)
     plot_spider_pose(testPose, title="Test Pose (Input)")
+    plt.pause(3)  # Display for 3 seconds
+    plt.close()   # Close the figure
+    
     plot_spider_pose(predictedPose, title="Predicted Pose (Output)")
+    plt.pause(3)  # Display for 3 seconds
+    plt.close()   # Close the figure
     
 
 if __name__ == "__main__":

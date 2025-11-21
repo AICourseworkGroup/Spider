@@ -102,5 +102,5 @@ def plot_spider_pose(angles, title="Spider Pose"):
     if title is not None:
         ax.set_title(title)
 
-    plt.show()
+    plt.show(block=False)
 
