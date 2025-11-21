@@ -6,9 +6,8 @@ class Full_NN(object):
     # A Multi Layer Neural Network class. We use this as for the way we need to handle the
     # variables is better suited.
     def __init__(self, X=2, HL=[2,2], Y=2):  # a constructor for some default values.
-        self.X = X  # inputs
-        self.HL = HL  # hidden layers
-        self.Y = Y  # outputs
+        self.X, self.HL, self.Y = X, HL, Y  # inputs, hidden layers, outputs
+
         # we are setting up some class variables for our inputs.
         L = [X] + HL + [Y]  # total number of layers. This creates a representation of the
         # the network in the format we need it. i.e array of the format [how many inputs, how many hidden layers, how many outputs]

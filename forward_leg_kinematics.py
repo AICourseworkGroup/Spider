@@ -16,8 +16,7 @@ def axis_angle_rotation_matrix(axis, angle):
         return np.identity(3)
     axis = axis / norm
     x, y, z = axis
-    c = np.cos(angle)
-    s = np.sin(angle)
+    c, s = np.cos(angle), np.sin(angle)
     C = 1 - c
     R = np.array([
         [x * x * C + c,   x * y * C - z * s, x * z * C + y * s],
@@ -56,14 +55,10 @@ def forward_leg_kinematics2(base_pos, base_angle, joint_angles, segment_lengths)
       j1, j2, j3, j4: numpy arrays (3,) for joint positions in 3D
     """
     # Joint angles
-    theta1 = float(joint_angles[0])
-    theta2 = float(joint_angles[1])
-    theta3 = float(joint_angles[2])
+    theta1, theta2, theta3 = float(joint_angles[0]), float(joint_angles[1]), float(joint_angles[2])
 
     # Segment lengths
-    L1 = float(segment_lengths[0])
-    L2 = float(segment_lengths[1])
-    L3 = float(segment_lengths[2])
+    L1, L2, L3 = float(segment_lengths[0]), float(segment_lengths[1]), float(segment_lengths[2])
 
     # Joint 1: leg base on body
     j1 = np.array(base_pos, dtype=float)
@@ -118,8 +113,7 @@ def forward_leg_kinematics2(base_pos, base_angle, joint_angles, segment_lengths)
 
 
 if __name__ == '__main__':
-    base_pos = [1.0, 0.0, 0.0]
-    base_angle = 0.0
+    base_pos, base_angle = [1.0, 0.0, 0.0], 0.0
     joint_angles = [0.0, -np.pi/4, -np.pi/2]
     segment_lengths = [1.2, 0.7, 1.0]
     j1, j2, j3, j4 = forward_leg_kinematics2(base_pos, base_angle, joint_angles, segment_lengths)

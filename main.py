@@ -9,7 +9,7 @@ from Spider.spider_pose import plot_spider_pose
 from Spider.nn_pytorch import run_pytorch_nn
 import matplotlib.pyplot as plt
 
-from helpers import display_step_1
+from helpers import display_step_1, display_generating_input_data
 
 def main():
     """
@@ -24,25 +24,9 @@ def main():
     
     # Walk cycle (display A and B)
     GATargetPoses = createTargetChromosomeList(targetChromosomeA, targetChromosomeB)
-    print(f"\nGenerated {len(GATargetPoses)} target frames for full walk cycle.")
-
-    print("\n" + "="*60)
-    print("STEP 2: Animate Target Chromosomes")
-    print("="*60)
-
-    choice = input("Do you want to animate the target chromosomes? (y/n): ").lower()
-    if choice == 'y':
-        print("Animating target chromosomes...")
-        animateTargetChromosomes("Target Chromosomes", GATargetPoses, delay=0.01) 
-        print("Animation complete.")
-
-    print("\n" + "="*60)
-    print("STEP 3: Running Genetic Algorithm")
-    print("="*60)
-
-    maxGenerations = int(input("Enter the maximum number of generations for the GA (Recommended: 300): "))
-    populationSize = int(input("Enter the population size for the GA (Recommended: 300): "))
-    mutationRate = float(input("Enter the mutation rate for the GA (Recommended 0.01): "))
+    
+    # Get GA parameters from user
+    maxGenerations, populationSize, mutationRate = display_generating_input_data(GATargetPoses)
 
     print("\nRunning GA to match target poses...")
     GAPoses = runGA(maxGenerations, populationSize, mutationRate, GATargetPoses)
