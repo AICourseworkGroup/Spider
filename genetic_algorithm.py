@@ -148,8 +148,10 @@ def animate_target_chromosomes(chrom_list, delay=0.1):
             except Exception:
                 # Non-GUI backends may not support pause; ignore
                 pass
-        # Close all figures at the end of the animation
+        # Animation finished, wait 3 seconds before closing
+        print("Animation finished. Waiting 3 seconds before closing...")
         try:
+            plt.pause(3)
             plt.close('all')
         except Exception:
             pass
@@ -205,9 +207,15 @@ def generate_target_poses():
     targetChromosoneA = createTargetChromosone(math.radians(0), math.radians(-45), math.radians(-30), True)
     title = "Target Chromosome A"
     plot_spider_pose(targetChromosoneA, title=title)
+    plt.pause(3)  # Display for 3 seconds
+    plt.close()   # Close the figure
+    
     title = "Target Chromosome B"
     targetChromosoneB = createTargetChromosone(math.radians(20), math.radians(-45), math.radians(-30), False)
     plot_spider_pose(targetChromosoneB, title=title)
+    plt.pause(3)  # Display for 3 seconds
+    plt.close()   # Close the figure
+    
     targetChromosoneList = createTargetChromosoneList(targetChromosoneA, targetChromosoneB)
     animate_target_chromosomes(targetChromosoneList)
     
