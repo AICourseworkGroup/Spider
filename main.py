@@ -6,13 +6,11 @@ from genetic_algorithm import createTargetChromosome, createTargetChromosomeList
 from neural_network import Full_NN, genRanPoses
 from genetic_algorithm import animateTargetChromosomes
 from plot_spider_pose import plot_spider_pose
-from pytorch import run_pytorch_comparison
+# from pytorch import run_pytorch_comparison
 import matplotlib.pyplot as plt
 
 def main():
-    """
-    Main function to generate target poses and train the neural network.
-    """
+   
     # Generate the target poses (GAPoses)
     # These will be what the genetic algorithm aims to match for each chromosome.
     # These are also the ideal poses we want the neural network to learn.
@@ -84,11 +82,11 @@ def main():
 
         if choice == '1':
             
-            animateTargetChromosomes(GATargetPoses, delay=0.1)
+            animateTargetChromosomes("Target Chromosomes", GATargetPoses, delay=0.1)
             
         elif choice == '2':
 
-            animateTargetChromosomes(GAPoses, delay=0.1)
+            animateTargetChromosomes("Genetic Algorithm Chromosomes", GAPoses, delay=0.1)
             
         elif choice == '3':
 
@@ -98,11 +96,9 @@ def main():
         else:
 
             print("Invalid choice. Please try again.")
-    
-    # Run PyTorch comparison with the same data
-    print("\n--- Running PyTorch Comparison ---")
-    run_pytorch_comparison(inputData, GAPoses, epochs=1000, lr=0.001)
-    
+   # Run PyTorch comparison with the same data
+   # print("\n--- Running PyTorch Comparison ---")
+   # run_pytorch_comparison(inputData, GAPoses, epochs=1000, lr=0.001)
 
 if __name__ == "__main__":
     main()
