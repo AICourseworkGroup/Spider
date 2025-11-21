@@ -33,16 +33,21 @@ def createTargetChromosome(a, b, c, isA):
     print(f"Target chromosome: {angles} ") 
     #plot_spider_pose(angles)
 
-    if isA:
-        title = "Target Chromosome A"
-        plot_spider_pose(angles, title=title)
-    else:
-        title = "Target Chromosome B"
-        plot_spider_pose(angles, title=title)
-
     return angles
 
 def createTargetChromosomeList(targetChromosomeA, targetChromosomeB):
+
+    print("Target A")
+    title = "Target Chromosome A"
+    plot_spider_pose(targetChromosomeA, title=title)
+    plt.pause(2)  # Display for 2 seconds
+    plt.close()   # Close the figure
+    
+
+    title = "Target Chromosome B"
+    plot_spider_pose(targetChromosomeB, title=title)
+    plt.pause(2)  # Display for 3 seconds
+    plt.close()   # Close the figure
 
     # Step 1: Take away the difference between the two chromosomes.
     differenceBetweenChromosomes = [b - a for a, b in zip(targetChromosomeA, targetChromosomeB)]
@@ -113,7 +118,7 @@ def createRandomPopulation(populationSize = 30):
     return population
 
 
-def animateTargetChromosomes(chrom_list, delay=0.1, is_target=True):
+def animateTargetChromosomes(chrom_list, delay=0.1):
     """Animate a list of target chromosomes using plot_spider_pose.
 
     Temporarily makes matplotlib's show non-blocking so we can call
@@ -138,10 +143,7 @@ def animateTargetChromosomes(chrom_list, delay=0.1, is_target=True):
             # Set a title that shows current frame number
             try:
                 ax = plt.gca()
-                if is_target:
-                    ax.set_title(f"Target Pose {idx+1} out of {len(chrom_list)}")
-                else:
-                    ax.set_title(f"Frame {idx+1} out of {len(chrom_list)}")
+                ax.set_title(f"Frame {idx+1} out of {len(chrom_list)}")
             except Exception:
                 pass
             try:
@@ -152,10 +154,8 @@ def animateTargetChromosomes(chrom_list, delay=0.1, is_target=True):
             except Exception:
                 # Non-GUI backends may not support pause; ignore
                 pass
-        # Animation finished, wait 3 seconds before closing
-        print("Animation finished. Waiting 3 seconds before closing...")
+        # Close all figures at the end of the animation
         try:
-            plt.pause(3)
             plt.close('all')
         except Exception:
             pass
@@ -242,7 +242,7 @@ def runGA(generations, populationSize, mutationRate, GAPoses):
 
     #Animate
     try:
-        animateTargetChromosomes(generatedChromosomeList, delay=0.1, is_target=False)
+        animateTargetChromosomes(generatedChromosomeList, delay=0.1)
     except Exception:
         #Ignore animation errors so creation still returns the list
         pass
