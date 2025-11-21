@@ -111,7 +111,7 @@ def createRandomPopulation(populationSize = 30):
     return population
 
 
-def animateTargetChromosomes(chrom_list, delay=0.1):
+def animateTargetChromosomes(title, chrom_list, delay=0.1):
     """Animate a list of target chromosomes using plot_spider_pose.
 
     Temporarily makes matplotlib's show non-blocking so we can call
@@ -136,7 +136,7 @@ def animateTargetChromosomes(chrom_list, delay=0.1):
             # Set a title that shows current frame number
             try:
                 ax = plt.gca()
-                ax.set_title(f"Frame {idx+1} out of {len(chrom_list)}")
+                ax.set_title(f"{title}: Frame {idx+1} out of {len(chrom_list)}")
             except Exception:
                 pass
             try:
@@ -156,8 +156,8 @@ def animateTargetChromosomes(chrom_list, delay=0.1):
         plt.show = orig_show
 
 
-# This is our function for calculating the fitness of a chromosome. We do this by taking the generated 
-# chromosome angles and taking away the generated angles. The closer to 0, the more they overlap, the more 
+# This is our function for calculating the fitness of a chromosome. We do this by taking the target 
+# chromosome angles and taking away the generated angles. The closer to 0, the more they overlap, and the more 
 # fit they are.
 
 def calculateFitness(inputAngles, targetChromosome):
