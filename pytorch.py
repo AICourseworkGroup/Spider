@@ -1,95 +1,114 @@
 import torch
-from torch import nn
-import matplotlib.pyplot as plt
+import torch.nn as nn
+import numpy as np
 
-from neural_network import genRanPoses
-from plot_spider_pose import plot_spider_pose
-
-device = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"Using {device.upper()} device")
-
-
-class NeuralNetwork(nn.Module):
-    def __init__(self, layer_sizes=[24, 512, 256, 24]):
-        super().__init__()
+class PyTorch_NN(nn.Module):
+    """Simple PyTorch neural network for spider pose generation"""
+    
+    def __init__(self, input_size=24, hidden_sizes=[512, 256], output_size=24):
+        """
+        Initialize the neural network.
+        
+        Args:
+            input_size: Number of input features (24 angles)
+            hidden_sizes: List of hidden layer sizes
+            output_size: Number of output features (24 angles)
+        """
+        super(PyTorch_NN, self).__init__()
+        
+        # Build layers dynamically
         layers = []
-        for i in range(len(layer_sizes) - 1):
-            layers.append(nn.Linear(layer_sizes[i], layer_sizes[i + 1]))
-            if i < len(layer_sizes) - 2:
-                layers.append(nn.ReLU())
+        prev_size = input_size
+        
+        # Add hidden layers with ReLU activation
+        for hidden_size in hidden_sizes:
+            layers.append(nn.Linear(prev_size, hidden_size))
+            layers.append(nn.ReLU())
+            prev_size = hidden_size
+        
+        # Add output layer (no activation for regression)
+        layers.append(nn.Linear(prev_size, output_size))
+        
+        # Combine all layers
         self.network = nn.Sequential(*layers)
-
+        
     def forward(self, x):
+        """Forward pass through the network"""
         return self.network(x)
-
-
-def train_nn(model, input_data, target_data, epochs=1000, lr=0.001):
-    """Train the neural network with input and target data."""
-    # Convert to tensors
-    X = torch.tensor(input_data, dtype=torch.float32)
-    y = torch.tensor(target_data, dtype=torch.float32)
     
-    loss_fn = nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    
-    # Train
-    model.train()
-    for epoch in range(epochs):
-        pred = model(X)
-        loss = loss_fn(pred, y)
+    def train_network(self, input_data, target_data, epochs=100, lr=0.001):
+        """
+        Train the neural network.
         
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+        Args:
+            input_data: List of input poses (random poses)
+            target_data: List of target poses (GA poses)
+            epochs: Number of training epochs
+            lr: Learning rate
+        """
+        # Convert data to tensors
+        x_train = torch.tensor(input_data, dtype=torch.float32)
+        y_train = torch.tensor(target_data, dtype=torch.float32)
         
-        if (epoch + 1) % 100 == 0:
+        # Set up optimizer and loss function
+        optimizer = torch.optim.Adam(self.parameters(), lr=lr)
+        criterion = nn.MSELoss()
+        
+        # Training loop
+        for epoch in range(epochs):
+            # Forward pass
+            predictions = self(x_train)
+            loss = criterion(predictions, y_train)
+            
+            # Backward pass
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            
+            # Print progress
             print(f"Epoch {epoch + 1}/{epochs}, Loss: {loss.item():.6f}")
+        
+        print(f"Training complete. Final loss: {loss.item():.6f}")
+        return loss.item()
     
-    return model
+    def predict(self, input_pose):
+        """
+        Make a prediction on a single pose.
+        
+        Args:
+            input_pose: Single input pose (list of 24 angles)
+            
+        Returns:
+            Predicted pose (list of 24 angles)
+        """
+        self.eval()
+        with torch.no_grad():
+            x = torch.tensor(input_pose, dtype=torch.float32)
+            prediction = self(x)
+            return prediction.numpy().tolist()
 
 
-def test_nn(model, input_data, target_data):
-    """Test the trained neural network and visualize results."""
-    model.eval()
-    with torch.no_grad():
-        # Test on a random pose
-        testPose = genRanPoses(popSize=1)[0]
-        testTensor = torch.tensor(testPose, dtype=torch.float32).unsqueeze(0)
-        prediction = model(testTensor).squeeze(0).numpy().tolist()
-    
-    # Show results
-    print("\nTest Input:", testPose[:6], "...")
-    print("Prediction:", prediction[:6], "...")
-    
-    plot_spider_pose(testPose, title="Input Pose")
-    plt.pause(3)
-    plt.close()
-    
-    plot_spider_pose(prediction, title="Predicted Pose")
-    plt.pause(3)
-    plt.close()
-
-
-# This function is meant to be called from main.py with existing data
-def run_pytorch_comparison(input_data, target_data, epochs=1000, lr=0.001):
+def run_pytorch_nn(input_data, target_data, epochs=50, lr=0.01):
     """
-    Simple function to train and test PyTorch NN with existing data.
+    Create, train, and test a PyTorch neural network.
     
     Args:
-        input_data: List of input poses from main.py
-        target_data: List of target poses (GAPoses) from main.py
+        input_data: List of random input poses
+        target_data: List of target GA poses
         epochs: Number of training epochs
         lr: Learning rate
+        
+    Returns:
+        Trained model
     """
-    print("\n" + "="*50)
-    print("PyTorch Neural Network Comparison")
-    print("="*50)
+    print("\n=== PyTorch Neural Network ===")
     
-    model = NeuralNetwork(layer_sizes=[24, 512, 256, 24])
-    print(f"Training on {len(input_data)} poses...")
+    # Create model
+    model = PyTorch_NN(input_size=24, hidden_sizes=[512, 256], output_size=24)
+    print(f"Model created with architecture: 24 -> 512 -> 256 -> 24")
     
-    model = train_nn(model, input_data, target_data, epochs, lr)
-    print("\nTesting...")
-    test_nn(model, input_data, target_data)
+    # Train model
+    print("\nTraining PyTorch network...")
+    model.train_network(input_data, target_data, epochs=epochs, lr=lr)
     
-    print("="*50 + "\n")
+    return model

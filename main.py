@@ -6,99 +6,114 @@ from genetic_algorithm import createTargetChromosome, createTargetChromosomeList
 from neural_network import Full_NN, genRanPoses
 from genetic_algorithm import animateTargetChromosomes
 from plot_spider_pose import plot_spider_pose
-# from pytorch import run_pytorch_comparison
+from pytorch import run_pytorch_nn
 import matplotlib.pyplot as plt
 
 def main():
-   
+    """
+    Main function to generate target poses and train the neural network.
+    Shows results/plots as it progresses through each step.
+    """
+    print("\n" + "="*60)
+    print("STEP 1: Creating and Displaying Target Chromosomes")
+    print("="*60)
+    
     # Generate the target poses (GAPoses)
-    # These will be what the genetic algorithm aims to match for each chromosome.
-    # These are also the ideal poses we want the neural network to learn.
     targetChromosomeA = createTargetChromosome(math.radians(0), math.radians(-45), math.radians(-30), True)
     targetChromosomeB = createTargetChromosome(math.radians(20), math.radians(-45), math.radians(-30), False)
-
-    print(targetChromosomeA)
-
-    print("Running Genetic Algorithm to generate target poses...")
+    
+    # Generate full walk cycle (this will display A and B)
     GATargetPoses = createTargetChromosomeList(targetChromosomeA, targetChromosomeB)
-    print("Target poses generated.")
+    print(f"\nGenerated {len(GATargetPoses)} target frames for full walk cycle.")
 
-    # Next we run the genetic algorithm. We ask the user to enter their own
-    # parameters for the GA. We supply our own recommended values that we believe
-    # give the best results. We need lots of generations and a high population
-    # to ensure the best fitness possible for each generated chromosome
+    print("\n" + "="*60)
+    print("STEP 2: Animate Target Chromosomes")
+    print("="*60)
+    choice = input("Do you want to animate the target chromosomes? (y/n): ").lower()
+    if choice == 'y':
+        print("Animating target chromosomes...")
+        animateTargetChromosomes(GATargetPoses, delay=0.1)
+        print("Animation complete.")
+
+    print("\n" + "="*60)
+    print("STEP 3: Running Genetic Algorithm")
+    print("="*60)
     maxGenerations = int(input("Enter the maximum number of generations for the GA (Recommended: 300): "))
     populationSize = int(input("Enter the population size for the GA (Recommended: 300): "))
-    mutationRate = float(input("Enter the mutation rate for the GA (Recommened 0.01): "))
+    mutationRate = float(input("Enter the mutation rate for the GA (Recommended 0.01): "))
 
-    # We run the GA to generate our chromosomes according to the target poses.
+    print("\nRunning GA to match target poses...")
     GAPoses = runGA(maxGenerations, populationSize, mutationRate, GATargetPoses)
+    print("GA Complete!")
 
-    # Generate random poses to be used as input for the neural network.
-    # The number of input poses should match the number of target poses.
+    print("\n" + "="*60)
+    print("STEP 4: Animate GA Generated Poses")
+    print("="*60)
+    print("Animating GA-generated poses...")
+    animateTargetChromosomes(GAPoses, delay=0.1)
+    print("Animation complete.")
+
+    # Generate random poses for neural network training
     num_poses = len(GAPoses)
-    print(f"Generating {num_poses} random poses for NN input...")
+    print(f"\nGenerating {num_poses} random input poses for neural network training...")
     inputData = genRanPoses(popSize=num_poses)
-    print("Input data for NN generated.")
+    print("Input data generated.")
 
-    # Initialize the Neural Network
-    # Input layer (X) and output layer (Y) size should be 24 (for 24 angles in a pose).
-    # Hidden layers (HL) can be configured as needed.
-    print("Initializing Neural Network...")
+    print("\n" + "="*60)
+    print("STEP 5: Training Custom Neural Network")
+    print("="*60)
     nn = Full_NN(X=24, HL=[24, 24], Y=24)
-    print("Neural Network initialized.")
-
-    # Train the Neural Network
-    # The inputData is a set of random poses, and GAPoses is the target.
-    # The network will learn to transform the random poses into the target poses.
-    print("Training Neural Network...")
+    print("Neural Network initialized: 24 -> 24 -> 24 -> 24")
+    print("\nTraining custom NN (printing progress)...")
     nn.train_nn(x=inputData, target=GAPoses, epochs=1000, lr=0.05)
-    print("Neural Network training finished.")
+    print("Custom NN training complete!")
 
-    #test the neural network with a new random pose
-    print("Testing Neural Network with a new random pose...")
+    print("\n" + "="*60)
+    print("STEP 6: Display Custom NN Input")
+    print("="*60)
     testPose = genRanPoses(popSize=1)[0]
+    print("Generated random test pose. Displaying...")
+    plot_spider_pose(testPose, title="Custom NN - Test Input")
+    plt.pause(2)
+    plt.close()
+
+    print("\n" + "="*60)
+    print("STEP 7: Display Custom NN Output")
+    print("="*60)
     predictedPose = nn.FF(testPose)
-    print("Test Pose (Input):")
-    print(testPose)
-    print("Predicted Pose (Output):")
-    print(predictedPose)
-    plot_spider_pose(testPose, title="Test Pose (Input)")
-    plt.pause(3)  # Display for 3 seconds
-    plt.close()   # Close the figure
+    print("Custom NN prediction generated. Displaying...")
+    plot_spider_pose(predictedPose, title="Custom NN - Prediction Output")
+    plt.pause(2)
+    plt.close()
+
+    print("\n" + "="*60)
+    print("STEP 8: Training PyTorch Neural Network")
+    print("="*60)
+    pytorch_model = run_pytorch_nn(inputData, GAPoses, epochs=300, lr=0.01)
+    print("PyTorch NN training complete!")
     
-    plot_spider_pose(predictedPose, title="Predicted Pose (Output)")
-    plt.pause(3)  # Display for 3 seconds
-    plt.close()   # Close the figure
+    print("\n" + "="*60)
+    print("STEP 9: Display PyTorch NN Input")
+    print("="*60)
+    testPose2 = genRanPoses(popSize=1)[0]
+    print("Generated random test pose. Displaying...")
+    plot_spider_pose(testPose2, title="PyTorch NN - Test Input")
+    plt.pause(3)
+    plt.close()
+    
+    print("\n" + "="*60)
+    print("STEP 10: Display PyTorch NN Output")
+    print("="*60)
+    pytorch_prediction = pytorch_model.predict(testPose2)
+    print("PyTorch NN prediction generated. Displaying...")
+    plot_spider_pose(pytorch_prediction, title="PyTorch NN - Prediction Output")
+    plt.pause(3)
+    plt.close()
 
-    menuLoop = True
+    print("\n" + "="*60)
+    print("ALL STEPS COMPLETE!")
+    print("="*60)
 
-    while menuLoop:
-        print("\nMenu:")
-        print("1. Display animation of target chromosomes")
-        print("2. Display animation of GA generated chromosomes")
-        print("3. Exit")
-        choice = input("Enter your choice: ")
-
-        if choice == '1':
-            
-            animateTargetChromosomes("Target Chromosomes", GATargetPoses, delay=0.1)
-            
-        elif choice == '2':
-
-            animateTargetChromosomes("Genetic Algorithm Chromosomes", GAPoses, delay=0.1)
-            
-        elif choice == '3':
-
-            menuLoop = False
-            print("Exiting program.")
-
-        else:
-
-            print("Invalid choice. Please try again.")
-   # Run PyTorch comparison with the same data
-   # print("\n--- Running PyTorch Comparison ---")
-   # run_pytorch_comparison(inputData, GAPoses, epochs=1000, lr=0.001)
 
 if __name__ == "__main__":
     main()
