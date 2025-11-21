@@ -8,10 +8,21 @@ def main():
     Main function to generate target poses and train the neural network.
     """
     # Generate the target poses (GAPoses)
-    # These are the ideal poses we want the neural network to learn.
+    # These will be what the genetic algorithm aims to match for each chromosome.
+    # These are also the ideal poses we want the neural network to learn.
     print("Running Genetic Algorithm to generate target poses...")
     GAPoses = generate_target_poses()
     print("Target poses generated.")
+
+    # Next we run the genetic algorithm. We ask the user to enter their own
+    # parameters for the GA. We supply our own recommended values that we believe
+    # give the best results. We need lots of generations and a high population
+    # to ensure the best fitness possible for each generated chromosome
+    maxGenerations = int(input("Enter the maximum number of generations for the GA (Recommended: 300): "))
+    populationSize = int(input("Enter the population size for the GA (Recommended: 300): "))
+    mutationRate = float(input("Enter the mutation rate for the GA (Recommened 0.01): "))
+
+    run_ga(maxGenerations, populationSize, mutationRate, GAPoses)
 
     # Generate random poses to be used as input for the neural network.
     # The number of input poses should match the number of target poses.
