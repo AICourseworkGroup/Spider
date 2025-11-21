@@ -192,12 +192,18 @@ def crossover(chromosomeA, chromosomeB):
     newChromosome2 = chromosomeB[:crossoverPoint] + chromosomeA[crossoverPoint:]
     return newChromosome1, newChromosome2
 
+# This is our mutation function. It goes through each angle in the chromosome and then generate a random number.
+# If the random number is less than the mutation rate, it mutates that angle by generating a new random angle.
 def mutate(chromosome, mutationRate):
     mutatedChromosome = chromosome.copy()
     for i in range(len(mutatedChromosome)):
         if rd.random() < mutationRate:
             mutatedChromosome[i] = randRadianGen()
     return mutatedChromosome
+
+# We create a new population by doing crossover between the best and second best chromosomes.
+# 15 of the new created with the first half of A and second half of B, and 15 with first half of B and 
+# second half of A.
 
 def createNewPopulation(best, secondBest, populationSize):
     newPopulation = []
