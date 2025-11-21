@@ -6,7 +6,6 @@ from genetic_algorithm import createTargetChromosome, createTargetChromosomeList
 from neural_network import Full_NN, genRanPoses
 from genetic_algorithm import animateTargetChromosomes
 from plot_spider_pose import plot_spider_pose
-from pytorch import run_pytorch_comparison
 import matplotlib.pyplot as plt
 
 def main():
@@ -97,10 +96,6 @@ def main():
             print("Exiting program.")
         else:
             print("Invalid choice. Please try again.")
-    
-    # Run PyTorch comparison with the same data
-    print("\n--- Running PyTorch Comparison ---")
-    run_pytorch_comparison(inputData, GAPoses, epochs=1000, lr=0.001)
     
 
 if __name__ == "__main__":
