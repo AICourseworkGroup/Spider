@@ -3,20 +3,45 @@ from random import random
 
 # because a lot of data will be needed, we will use a class approach.
 class Full_NN(object):
+    """
+    A simple feed forward neural network with back propagation and gradient descent.
+
+    args:
+        X: Number of input features
+        HL: List of hidden layer sizes
+        Y: Number of output features 
+
+    """
+
+
     # A Multi Layer Neural Network class. We use this as for the way we need to handle the
     # variables is better suited.
     def __init__(self, X=2, HL=[2,2], Y=2):  # a constructor for some default values.
         self.X, self.HL, self.Y = X, HL, Y  # inputs, hidden layers, outputs
 
-        # we are setting up some class variables for our inputs.
-        L = [X] + HL + [Y]  # total number of layers. This creates a representation of the
-        # the network in the format we need it. i.e array of the format [how many inputs, how many hidden layers, how many outputs]
-        W = []  # initialize a weight array
-        for i in range(len(L)-1):  # we want to be able go to the next layer up so we set one minus
+        """
+        Initialize the neural network, where we set up the weights, derivatives, and outputs for each layer.
+
+
+
+        args:
+            L = [X] + HL + [Y]: Total number of layers including input, hidden, and output layers (Creates repensentation of the network in specified format)
+            W = []: Initialize a weight array
+            
+
+        """
+
+        # Setting up some class variables for our inputs.
+        L = [X] + HL + [Y] 
+        W = []
+
+        # we want to be able go to the next layer up so we set one minus
+        for i in range(len(L)-1):  
             # Use Xavier initialization: weights scaled by sqrt(1 / input_size)
             # This prevents vanishing/exploding gradients in deep networks
             w = np.random.randn(L[i], L[i+1]) * np.sqrt(2.0 / L[i])
             W.append(w)  # add the new values to the array.
+            
         self.W = W  # assign the list of weights to the class variable.
 
         Der = []  # initialize a derivative array. This are needed to calculate the back propagation. they are the derivatives of the activation function.
@@ -45,71 +70,161 @@ class Full_NN(object):
             self.out[i+1] = out  # pass the result to the class variable to preserve for later (when we do the back propagation.
         return out  # return the outputs of the layers.
 
-    def BP(self, Er):  # back propagation method. this works by using the Output Error (Er) to go backwards through the layers and calculate the errors needed to update the Weights.
-        # this will return the final error of the input.
+    def BP(self, Er):
+        """
+        Back Propagation method, using the Output Error (Er) to iterate backwards through the layers and calculate the errors needed to update the Weights and returns the final error of the input.
+
+        This is based on the equations for back propagation.
+            dE/dW_i = (y - y_hat) * S'(z_i) * x_i
+            S'(z_i) = S(z_i) * (1 - S(z_i)) for sigmoid
+            S'(z_i) = 1 for linear (output layer)
+            z_{i+1} = a_i * W_i
+
+        args:
+            D = Er : Linear activation derivative is 1, so just use error directly 
+            Er: The error at the output layer (target - output)
+            out: returns the output for the previous layer (in reverse order)
+
+            D_fixed = D.reshape(D.shape[0], -1).T: Turns Delta into an array of appropriate size
+            this_out = self.out[i]: current layer output.
+            this_out = this_out.reshape(this_out.shape[0], -1): reshape as before to get column array suitable for the multiplication we need.
+            self.Der[i] = np.dot(this_out, D_fixed): Calculate the derivative for weight update and store in class variable.
+
+            Er = np.dot(D, self.W[i].T): This essentially back propagates the next error we need for the next iteration. This error term
+            is part of the dE/DWi equation for the next layer down in the back propagation, and we pass it on after calculating it in this iteration.
+
+        """
+        
         for i in reversed(range(len(self.Der))):  # this is a trick allowed by Python, we can go back in reverse and essentially go backwards into the network.
-            # so we are iterating backwards through the layers.
-            # based on the back propagation equations
-            # dE/dW_i = (y - y_hat) * S'(z_i) * x_i
-            # S'(z_i) = S(z_i) * (1 - S(z_i)) for sigmoid
-            # S'(z_i) = 1 for linear (output layer)
-            # z_{i+1} = a_i * W_i
-            out = self.out[i+1]  # we get the layer output for the previous layer (we are going in reverse)
+            
+            out = self.out[i+1] 
             
             # For output layer (last layer), derivative is 1 (linear activation)
             # For hidden layers, use sigmoid derivative
+
             if i == len(self.Der) - 1:
-                D = Er  # Linear activation derivative is 1, so just use error directly
+                # Linear activation derivative is 1, so just use error directly
+                D = Er  
             else:
-                D = Er * self.sigmoid_Der(out)  # Apply sigmoid derivative for hidden layers
+                # Apply sigmoid derivative for hidden layers
+                D = Er * self.sigmoid_Der(out)  
             
-            D_fixed = D.reshape(D.shape[0], -1).T  # Python trick to turn Delta into an array of appropriate size
-            this_out = self.out[i]  # current layer output.
-            this_out = this_out.reshape(this_out.shape[0], -1)  # reshape as before to get column array suitable for the multiplication we need.
-            self.Der[i] = np.dot(this_out, D_fixed)  # do the matrix multiplication and pass result to class variable.
-            Er = np.dot(D, self.W[i].T)  # this is the trick, as this essentially back propagates the next error we need for the next iteration. This error term
-            # is part of the dE/DWi equation for the next layer down in the back propagation, and we pass it on after calculating it in this iteration.
+            D_fixed = D.reshape(D.shape[0], -1).T
+            this_out = self.out[i]
+            this_out = this_out.reshape(this_out.shape[0], -1)
+            self.Der[i] = np.dot(this_out, D_fixed)
+            Er = np.dot(D, self.W[i].T) 
 
     def train_nn(self, x, target, epochs, lr):  # training the network. The x is an array, the target is an array the epochs is a number and the lr is a number.
-        for i in range(epochs):  # training loop for as many epochs as we need
-            S_errors = 0  # variable to carry the error we need to report to the user
-            for j, input in enumerate(x):  # iterate through the training data and inputs
+
+        """
+        Train the neural network using back propagation and gradient descent. The training loop occurs over the specified number of epochs.
+
+        args:
+            epochs: Number of training epochs
+            S_errors: Variable to carry the error we need to report to the user
+            x: List of input poses (random poses)
+            target: List of target poses (GA poses)
+            lr: Learning rate for weight updates
+            output = self.FF(input): Forward pass to get the network output for the given input
+            e = t - output: Calculate the error between target and output
+            MSQE: Mean Squared Quadratic Error
+        """
+
+        for i in range(epochs):
+            S_errors = 0  
+            for j, input in enumerate(x):
+
+                # Convert input and target to numpy arrays
                 t = np.array(target[j], dtype=np.float32)
-                output = self.FF(input)  # use the network calculations for forward calculations.
-                e = t - output  # obtain the overall Network output error
-                self.BP(e)  # use that error to do the back propagation
-                self.GD(lr)  # Do gradient descent
-                S_errors += (t - output) ** 2  # update the overall error to show the user.
+
+                output = self.FF(input) 
+                e = t - output
+
+                # Do gradient descent and back propagation
+                self.BP(e)
+                self.GD(lr)
+
+                # update the overall error to show the user
+                S_errors += (t - output) ** 2
 
             # Print mean squared quadratic error (MSQE) for this epoch so user can track training
             epoch_loss = np.average(S_errors)
             print(f"Epoch {i+1}/{epochs} MSQE: {epoch_loss}")
 
-    def GD(self, lr=0.05):  # Gradient descent
-        for i in range(len(self.W)):  # go through the weights
+
+    def GD(self, lr=0.05): 
+        """
+        Update weights and learning rate, with gradient descent.
+
+        args:
+            lr: Learning rate for weight updates
+            W: List of weight matrices between layers
+            Der: List of derivatives for each weight matrix
+
+        """
+
+        for i in range(len(self.W)):  # Iterates through the weights
             W = self.W[i]
             Der = self.Der[i]
-            W += Der * lr  # update the weights by applying the learning rate
+            W += Der * lr 
 
-    def sigmoid(self, x):  # Sigmoid activation function
+    def sigmoid(self, x): 
+        """
+        Sigmoid activation function is used to introduce non-linearity into the network.
+
+        args:
+            x: Input value to the sigmoid function
+        """
+
         y = 1.0 / (1 + np.exp(-x))
         return y
 
-    def sigmoid_Der(self, x):  # sigmoid function derivative
+    def sigmoid_Der(self, x):
+        """
+        Derivative of the sigmoid function
+
+        args:
+            x: Input value to calculate the derivative
+        
+        """
+
         sig_der = x * (1.0 - x)
         return sig_der
 
-    def msqe(self, t, output):  # mean square error
+    def msqe(self, t, output):
+        """
+        Calculate Mean Squared Quadratic Error between target and output.
+
+        args:
+            t: Target output
+            output: Neural network output
+        """
+
         msq = np.average((t - output) ** 2)
         return msq
 
 
-
 def randAngGen():
-    angle = (random() * np.pi / 2) - (np.pi / 4) # random angle between -45 and 45 degrees in radians
+    """ 
+    Generate a random angle between -45 and 45 degrees in radians for spider joint angles. 
+
+    args:
+        None
+    """
+
+    angle = (random() * np.pi / 2) - (np.pi / 4) 
     return angle
 
 def genRanPoses(popSize=3000):
+    """ 
+    Generate random poses for neural network training, by returning a list of lists that contains random poses from each joint.
+    where each leg has 3 joints (a, b, c) and there are 8 legs (L1, L2, L3, L4, R4, R3, R2, R1)
+     
+    args:
+        popSize: Number of random poses to generate
+       """
+    
     poses = []
     for _ in range(popSize):
         l1 = [randAngGen(), randAngGen(), randAngGen()]

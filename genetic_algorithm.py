@@ -1,35 +1,28 @@
 import random as rd
 import math
 import matplotlib.pyplot as plt
-from Spider.spider_pose import plot_spider_pose
+from spider_pose import plot_spider_pose
 
 def createTargetChromosome(a, b, c, isA):
     """
-        Initialize the neural network.
+        Handles chromosome encoding we first looked at the problem of the spider by assigning all 8 
+        legs to individual vectors consisting of 3 individual joints a, b, c that are grouped into 
+        legs where left legs L1, L2, L3, L4, while the right legs are Grouped as R4, R3, R2, R1. 
+        The function params are from the main function where we define the angles for joints a, b, c.
         
         Args:
-            input_size: Number of input features (24 angles)
-            hidden_sizes: List of hidden layer sizes
-            output_size: Number of output features (24 angles)
+            a: Angle for joint a in radians
+            b: Angle for joint b in radians
+            c: Angle for joint c in radians
+            isA: Boolean indicating if the chromosome is of type A or B
         """
     if isA:
-        l1 = [a, b, c]
-        l2 = [a, b, c]
-        l3 = [a, b, c]
-        l4 = [a, b, c]
-        r4 = [-a, b, c]
-        r3 = [-a, b, c]
-        r2 = [-a, b, c]
-        r1 = [-a, b, c]
+        l1, l2, l3, l4 = [a, b, c], [a, b, c], [a, b, c], [a, b, c]
+        r4, r3, r2, r1 = [-a, b, c], [-a, b, c], [-a, b, c], [-a, b, c]
+        
     else:
-        l1 = [a, b, c]
-        l2 = [-a, b, c]
-        l3 = [a, b, c]
-        l4 = [-a, b, c]
-        r4 = [a, b, c]
-        r3 = [-a, b, c]
-        r2 = [a, b, c]
-        r1 = [-a, b, c]
+        l1, l2, l3, l4 = [a, b, c], [-a, b, c], [a, b, c], [-a, b, c]
+        r4, r3, r2, r1 = [a, b, c], [-a, b, c], [a, b, c], [-a, b, c]
 
 
     # return a flat Python list (24 floats) in radians
@@ -40,6 +33,13 @@ def createTargetChromosome(a, b, c, isA):
     return angles
 
 def createTargetChromosomeList(targetChromosomeA, targetChromosomeB):
+    """
+        This function creates a list of target chromosomes that represent a walk cycle between two 
+        target chromosomes A and B. 
+        
+        Args:
+            targetChromosomeA: The first target chromosome (standing pose)
+            targetChromosomeB: The second target chromosome (stepping pose)"""
 
     print("Target A")
     title = "Target Chromosome A"
