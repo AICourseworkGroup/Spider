@@ -1,10 +1,5 @@
 import numpy as np
 
-"""
-Direct translation of the MATLAB forward_leg_kinematics2 function.
-Preserves original logic and behavior.
-"""
-
 
 def axis_angle_rotation_matrix(axis, angle):
     """Axis-angle rotation matrix.
@@ -18,12 +13,10 @@ def axis_angle_rotation_matrix(axis, angle):
     axis = np.array(axis, dtype=float)
     norm = np.linalg.norm(axis)
     if norm == 0:
-        # In MATLAB code axis would be normalized; if zero, return identity
         return np.identity(3)
     axis = axis / norm
     x, y, z = axis
-    c = np.cos(angle)
-    s = np.sin(angle)
+    c, s = np.cos(angle), np.sin(angle)
     C = 1 - c
     R = np.array([
         [x * x * C + c,   x * y * C - z * s, x * z * C + y * s],
@@ -34,7 +27,8 @@ def axis_angle_rotation_matrix(axis, angle):
 
 
 def rotate_vector(v, axis, angle):
-    """Rotate a 3D vector v about axis by angle (radians).
+    """
+    Rotate a 3D vector about axis by angle (radians).
 
     v may be 1D array-like of length 3.
     Returns the rotated vector as a 1D numpy array.
@@ -45,7 +39,8 @@ def rotate_vector(v, axis, angle):
 
 
 def forward_leg_kinematics2(base_pos, base_angle, joint_angles, segment_lengths):
-    """Compute forward kinematics for a single leg.
+    """
+    Compute forward kinematics for a single leg.
 
     Translation of the MATLAB function:
       [j1, j2, j3, j4] = forward_leg_kinematics2(base_pos, base_angle, joint_angles, segment_lengths)
@@ -59,15 +54,11 @@ def forward_leg_kinematics2(base_pos, base_angle, joint_angles, segment_lengths)
     Outputs:
       j1, j2, j3, j4: numpy arrays (3,) for joint positions in 3D
     """
-    # Unpack joint angles
-    theta1 = float(joint_angles[0])
-    theta2 = float(joint_angles[1])
-    theta3 = float(joint_angles[2])
+    # Joint angles
+    theta1, theta2, theta3 = float(joint_angles[0]), float(joint_angles[1]), float(joint_angles[2])
 
-    # Unpack segment lengths
-    L1 = float(segment_lengths[0])
-    L2 = float(segment_lengths[1])
-    L3 = float(segment_lengths[2])
+    # Segment lengths
+    L1, L2, L3 = float(segment_lengths[0]), float(segment_lengths[1]), float(segment_lengths[2])
 
     # Joint 1: leg base on body
     j1 = np.array(base_pos, dtype=float)
@@ -91,7 +82,7 @@ def forward_leg_kinematics2(base_pos, base_angle, joint_angles, segment_lengths)
     j2 = j1 + L1 * coxa_dir
 
     # --- Femur rotation ---
-    # Define femur rotation axis (perpendicular to coxa_dir and vertical axis)
+    # Perpendicular to coxa_dir and vertical axis
     femur_rot_axis = np.cross(coxa_dir, np.array([0.0, 0.0, 1.0]))
     femur_norm = np.linalg.norm(femur_rot_axis)
     if femur_norm == 0:
@@ -122,9 +113,7 @@ def forward_leg_kinematics2(base_pos, base_angle, joint_angles, segment_lengths)
 
 
 if __name__ == '__main__':
-    # Simple smoke example (prints nothing visual)
-    base_pos = [1.0, 0.0, 0.0]
-    base_angle = 0.0
+    base_pos, base_angle = [1.0, 0.0, 0.0], 0.0
     joint_angles = [0.0, -np.pi/4, -np.pi/2]
     segment_lengths = [1.2, 0.7, 1.0]
     j1, j2, j3, j4 = forward_leg_kinematics2(base_pos, base_angle, joint_angles, segment_lengths)
