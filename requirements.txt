@@ -1,3 +1,18 @@
 numpy
 matplotlib
+
+# PyTorch - CPU version (default)
 torch
+
+# PyTorch - GPU version (CUDA 12.1) - uncomment if you have an NVIDIA GPU
+# torch --index-url https://download.pytorch.org/whl/cu121
+
+# PyTorch - GPU version (CUDA 11.8) - uncomment if you have an NVIDIA GPU with older drivers
+# torch --index-url https://download.pytorch.org/whl/cu118
+
+# PyTorch - GPU version (ROCm 6.0) - uncomment if you have an AMD GPU
+# torch --index-url https://download.pytorch.org/whl/rocm6.0
+
+# PyTorch - Intel GPU - uncomment if you have an Intel GPU (requires intel-extension-for-pytorch)
+# torch
+# intel-extension-for-pytorch
