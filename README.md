@@ -2,6 +2,34 @@
 
 This project uses genetic algorithms and neural networks to generate walking gaits for an 8-legged spider robot. It compares two neural network implementations: a custom implementation from scratch and PyTorch.
 
+## Requirements
+
+```bash
+# Core dependencies
+numpy
+matplotlib
+torch
+```
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/AICourseworkGroup/Spider.git
+cd Spider
+```
+
+2. Create and activate a conda environment (optional but recommended):
+```bash
+conda create -n spider python=3.11
+conda activate spider
+```
+
+3. Install dependencies:
+```bash
+pip install numpy matplotlib torch
+```
+
 ## Project Structure
 
 ```
@@ -46,33 +74,7 @@ the final helper function is called display_all_steps_complete, which sprints ou
 └── README.md                        # This file
 ```
 
-## Requirements
 
-```bash
-# Core dependencies
-numpy
-matplotlib
-torch
-```
-
-## Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/AICourseworkGroup/Spider.git
-cd Spider
-```
-
-2. Create and activate a conda environment (optional but recommended):
-```bash
-conda create -n spider python=3.11
-conda activate spider
-```
-
-3. Install dependencies:
-```bash
-pip install numpy matplotlib torch
-```
 
 ## Usage
 
