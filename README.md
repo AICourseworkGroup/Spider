@@ -19,16 +19,22 @@ git clone https://github.com/AICourseworkGroup/Spider.git
 cd Spider
 ```
 
-2. Create and activate a conda environment (optional but recommended):
-```bash
-conda create -n spider python=3.11
-conda activate spider
-```
+2. Choose your installation method:
 
-3. Install dependencies:
-```bash
-pip install numpy matplotlib torch
-```
+   **Option A - Using Conda (recommended):**
+   ```bash
+   conda env create -f environment.yml
+   conda activate spider
+   ```
+   *Note: Edit `environment.yml` to uncomment GPU-specific PyTorch versions if you have NVIDIA GPU.*
+
+   **Option B - Using pip with venv:**
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+   *Note: Edit `requirements.txt` to uncomment GPU-specific PyTorch versions if you have NVIDIA/AMD/Intel GPU.*
 
 ## Project Structure
 
