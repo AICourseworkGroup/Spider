@@ -12,15 +12,24 @@ def plot_spider_pose(angles, title="Spider Pose"):
       angles: 1x24 numpy array or list of joint angles in radians
               [theta1_1, theta2_1, theta3_1, ..., theta1_8, theta2_8, theta3_8]
       title: string
+
+    args:
+        n_legs: number of legs
+        segment_lengths: lengths of leg segments [Coxa, Femur, Tibia] 
+        a: variable for body x-radius
+        b: variable for body y-radius
+        fig: matplotlib figure
+        np: numpy
+        ax: 3D axes for plotting
     """
     n_legs = 8
-    segment_lengths = [1.2, 0.7, 1.0]  # [Coxa, Femur, Tibia]
+    segment_lengths = [1.2, 0.7, 1.0]
+
     a = 1.5
     b = 1.0
 
     # L1 front-left to L4 rear-left, R4 rear-right to R1 front-right
-    left_leg_angles = np.deg2rad([45, 75, 105, 135])
-    right_leg_angles = np.deg2rad([-135, -105, -75, -45])
+    left_leg_angles, right_leg_angles  = np.deg2rad([45, 75, 105, 135]), np.deg2rad([-45, -75, -105, -135])
     base_angles = np.concatenate((left_leg_angles, right_leg_angles))
 
     leg_labels = ['L1', 'L2', 'L3', 'L4', 'R4', 'R3', 'R2', 'R1']
