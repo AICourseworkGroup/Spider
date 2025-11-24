@@ -22,7 +22,7 @@ def createTargetChromosome(a, b, c, isA):
         
     else:
         l1, l2, l3, l4 = [a, b, c], [-a, b, c], [a, b, c], [-a, b, c]
-        r4, r3, r2, r1 = [a, b, c], [-a, b, c], [a, b, c], [-a, b, c]
+        r4, r3, r2, r1 = [-a, b, c], [a, b, c], [-a, b, c], [a, b, c]
 
 
     # return a flat Python list (24 floats) in radians
