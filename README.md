@@ -83,30 +83,73 @@ display_pytorch_nn_output(testPose2, pytorch_model, GATargetPoses) is the final 
 the final helper function is called display_all_steps_complete, which sprints out all steps complete into the main.
 
 ## genetic_algorithm.py
-### GA details go here
+For the genetic algorithm we used python instead of MATLAB due to not having a full understanding of the language. With the limited time constraints, we moved to python due to its simplicity through clear syntax.
 
+### Chromosome Encoding
+The "chromosome" defines a single pose for the spider. Which is is encoded as a list of 24 floating-point numbers, with each number representing a specific joint's angle in radians. The 24 joints are structured as follows:
+
+   - 8 legs: 4 left (L1, L2, L3, L4) and 4 right (R1, R2, R3, R4).
+   - 3 joints per leg: Each leg's position is determined by the angles of its
+     three joints.
+
+  The genetic algorithm evolves a population of these chromosomes to generate a walking gait, using target poses that define the key frames of the walking motion.
+
+The structure of the inputs on each joint on targetChromosomeA  is A = math.radians(0), B= math.radians(-45) and C = math.radians(-30) and isA  = True.  
+
+While targetchromosomeB is slightly different with targetChromosomeB is A = math.radians(20) and B = math.radians(-45) and C = math.radians(-30). 
 
 ## nn_self.py
-### nn_self.py details go here
+The neural network function is a custom implemention. which when complete lears to map random spider poses to genetic algorithim generated poses, achieved through backprobagation, gradient descent and weights.
 
-
-## nn_self.py
-### nn_self.py details go here
-
+A structure of 24, 512, Sigmoid, 256, Sigmoid, 24. This is in comparison to the pytorch neural network that used ReLU instead of Sigmoid, changed due to undesirable leg positions. We believe this to be the case due to pytorch having a different learning rate from the Adam optimiser.  
 
 ## nn_pytorch.py
-### nn_pytorch.py details go here
-
+The PyTorch neural network implementation uses the PyTorch library to create and train a neural network that maps random spider poses to genetic algorithm-generated poses. The network architecture consists of an input layer with 24 neurons, two hidden layers with 512 and 256 neurons respectively, and an output layer with 24 neurons. The ReLU activation function is used for the hidden layers, and the Adam optimizer is applied for training.
 
 ## forward_leg_kinematics.py
-### forward_leg_kinematics details go here
+This file contains the foward leg kinematics calculations for the spider for a single spider leg. and is used for 3 degree angles of movement freedom. the 3 legs are Coax (upper most joint that rotates in x-axis) , Femur (middle joint that rotates in y-axis) and Tibia (lower joint that rotates in y-axis).
 
+It uses these input angles and handles the rotation matricies to calculate the 3D position of the spider leg's end effector (the tip of the leg). This is crucial for visualizing the spider's pose and ensuring that the generated poses are physically feasible.
 
 ## spider_pose.py
-### spider_pose.py details go here
+This file handles the 3D visualization of the spider poses. It uses Matplotlib to create 3D plots of the spider based on the joint angles provided in the chromosome. The visualization includes all 8 legs of the spider, each represented by lines connecting the joints calculated using forward kinematics.
 
 ## helpers.py
-### helpers.py details go here 
+The helpers.py file contains various functions that assist with isolating differnt parts of the main program for better organization and readability. These functions handle tasks such as displaying target chromosomes, animating poses, training neural networks, and displaying results.
+
+# Genetic Algorithm Detailed Explanations
+## Fitness Function
+1. we call calculateFitness() which will take the difference between the two chromosomes. By doing this, we can see how much a generated chromosome overlaps with the target. The closer it is to 0, the more it matches.  
+
+2. For the index of the best fitness for later. The variable that stores the current best fitness is initialised with infinity. This way, no matter what the fitness of the first chromosome is, it’ll be less than the variable and get assigned.  
+
+3. We also store the index of the 2nd best fitness. By doing this, we can choose the best 2 parents from each generation to use for crossover later when making a new population. 
+
+Were using tornament selection to get the 2 best parents in a large population. This is done by randomly selecting chromosomes from the population and comparing their fitness values. The chromosome with the highest ftness is selected and the process is repeated to find the second best parent. We chose this method over roulette wheel selection as the roulette wheel has a higher bias towards higher fitness scores, but doesnt always select the best chromosomes for the parents.
+
+## Create Population
+1. The first step of our genetic algorithm is to generate our initial population. We do this in the createRandomPopulation() function. This function takes a population size given by the user as a parameter.
+
+The population uses the length of the for loopwhere the population is made. we then initialise the population by setting variables for each leg with randomly generated radians that are generated in a separate function randRadianGen(). 
+
+2. We then append this chromosome to the population list with all of the angles added to each other in the list.  
+
+## Create New Population
+1. We run createNewPopulation() function which takes the two best parents and the population size as paramaters. It then runs a for loop that runs for the total population / 2.  
+
+2. We then create two new list variables that have half of the new population stored in each of them.  
+
+## Crossover
+t works by taking the two best parents from a given generation as parameters. We then randomly generate a crossover point. On either side of this point is where the values of the new child swap from the values of chromosome A to chromosome B to ensure genetic diversity. 
+
+Crossover returns these newly created chromosomes which are then appended to a newPopulation list variable back in the original function.
+
+## Mutation
+1. We perform mutation on the new chromosome to give further diversity. This function takes the chromosome and a mutation rate determined by the user as parameters. 
+
+2. It then goes through every angle in the chromosome and generates a random number between 0 and 1. If this number is smaller than the mutation rate then that angle is mutated by giving it a new randomly generated one. 
+
+
 
 ```
 Spider/

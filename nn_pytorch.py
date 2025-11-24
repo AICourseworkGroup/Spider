@@ -7,6 +7,10 @@ class PyTorch_NN(nn.Module):
     def __init__(self, input_size=24, hidden_sizes=[512, 256], output_size=24):
         """
         Initialize the neural network.
+
+        First, using the inputted layers, a sequence of layers is built, inserting ReLU activation in the 
+        hidden layers. ReLU was chosen as Sigmoid often gave leg positions that were straight and upwards. 
+
         
         Args:
             input_size: Number of input features (24 angles)
@@ -37,7 +41,12 @@ class PyTorch_NN(nn.Module):
     
     def train_network(self, input_data, target_data, epochs=100, lr=0.001):
         """
-        Train the neural network.
+        Train the neural network. 
+
+        First, the data is converted to tensors, this ensures that the data is compatible with the pytorch 
+        library. Next the optimiser for the learning rate and criteria for loss is decided. Adam was chosen 
+        due to its common usage; it was found to work well so it was not changed. MSE was also chosen due to 
+        its common usage. 
         
         Args:
             input_data: List of input poses (random poses)
@@ -79,6 +88,7 @@ class PyTorch_NN(nn.Module):
         Returns:
             Predicted pose (list of 24 angles)
         """
+
         # Set the model to evaluation mode (disables dropout/batchnorm if present)
         self.eval()
         # Disable gradient calculation (faster, saves memory, not needed for inference)
