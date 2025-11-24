@@ -38,7 +38,7 @@ cd Spider
 
 ## Project Structure
 
-## Main
+## Main.py
 Main program that runs both the genetic algorithm and neural networks (self and PyTorch), It will first have the inputs for both chromosomes as variables. The parameters for the chromosomes are the two poses of the spider (standing and mid-gait pose). It will convert these parameters into radians from the math library. 
 
 ### createTargetChromosomeList
@@ -81,6 +81,32 @@ display_pytorch_nn_output(testPose2, pytorch_model, GATargetPoses) is the final 
 
 ### display_all_steps_complete
 the final helper function is called display_all_steps_complete, which sprints out all steps complete into the main.
+
+## genetic_algorithm.py
+### GA details go here
+
+
+## nn_self.py
+### nn_self.py details go here
+
+
+## nn_self.py
+### nn_self.py details go here
+
+
+## nn_pytorch.py
+### nn_pytorch.py details go here
+
+
+## forward_leg_kinematics.py
+### forward_leg_kinematics details go here
+
+
+## spider_pose.py
+### spider_pose.py details go here
+
+## helpers.py
+### helpers.py details go here 
 
 ```
 Spider/
