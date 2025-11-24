@@ -97,7 +97,7 @@ def randRadianGen():
 # In this function we create a random population for the genetic algorithm. We call randRadianGen to generate 
 # each angle. 
 
-def createRandomPopulation(populationSize = 30):
+def createRandomPopulation(populationSize):
     population = []
 
     for i in range(populationSize):
