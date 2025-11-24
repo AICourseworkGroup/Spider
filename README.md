@@ -47,7 +47,7 @@ Upon setting the poses, we will progress to running the createTargetChromosomeLi
 ### display_generating_input_data(GATargetPoses)
 progressing further into the main program we run a helper function called display_generating_input_data(GATargetPoses) this function prints out step 2 that animates the target chromosomes. after displaying text it will ask the user if they want to animate the target chromosomes or not, if the user inputs 'y' it will animate the target chromosomes. and if they press n it will skip the animation. and progress to step 3. if animation is chosen the animation will iterate from pose A to pose B and back to pose A for 3 cycles. The function also returns maxGenerations, populationSize and mutationRate variables that are used in the genetic algorithm, as the user is required to input data for these variables.
 
-### run_genetic_algorithm(maxGenerations, populationSize, mutationRate, GATargetPoses
+### run_genetic_algorithm(maxGenerations, populationSize, mutationRate, GATargetPoses)
 When the user inputs the required data, the main program will progress to running the genetic algorithm function called run_genetic_algorithm(GATargetPoses, maxGenerations, populationSize, mutationRate). This function takes in the target poses and the user-inputted parameters and runs the genetic algorithm to generate a walking gait for the spider robot. it returns a variable called bestChromosome which is the best solution found by the genetic algorithm.
 
 ### display_animating_ga_generated_poses(GAPose)
