@@ -117,12 +117,22 @@ def createRandomPopulation(populationSize):
 
 
 def animateTargetChromosomes(title, chrom_list, delay=0.1):
-    """Animate a list of target chromosomes using plot_spider_pose.
-
-    Temporarily makes matplotlib's show non-blocking so we can call
-    `plot_spider_pose` without modifying that module. Each frame is displayed
-    for `delay` seconds and then the figure is closed.
     """
+    Animates a sequence of spider poses (chromosomes) to visually demonstrate the transition 
+    from a standing pose to a mid-gait pose and back to the standing pose. 
+
+    The function takes a list of chromosomes and iterates through them. For each chromosome, 
+    the `plot_spider_pose` function is called to render the pose in a 3D plot. The animation 
+    loops through a set number of frames, with a delay between each frame. 
+
+    The result is a smooth and continuous animation of the spider's walking gait.
+
+    Args:
+
+        title: Title for the animation window
+        chrom_list: List of chromosomes (poses) to animate
+        delay: Time delay between frames in seconds (default is 0.1s)
+"""
     orig_show = plt.show
 
     def _non_blocking_show(*args, **kwargs):
@@ -160,22 +170,46 @@ def animateTargetChromosomes(title, chrom_list, delay=0.1):
     finally:
         plt.show = orig_show
 
-
-# This is our function for calculating the fitness of a chromosome. We do this by taking the target 
-# chromosome angles and taking away the generated angles. The closer to 0, the more they overlap, and the more 
-# fit they are.
-
 def calculateFitness(inputAngles, targetChromosome):
+    """
+    for calculating the fitness of a chromosome. We do this by taking the target 
+    chromosome angles and taking away the generated angles. The closer to 0, the more they overlap, and the 
+    more fit they are.
+
+    args:
+        inputAngles: The angles of the current chromosome being evaluated
+        targetChromosome: The angles of the target chromosome we are trying to match
+
+    returns:
+        fitness: The calculated fitness value for the chromosome
+
+    """
+
     diffs = [abs(t - i) for t, i in zip(targetChromosome, inputAngles)]
     fitness = sum(diffs)
     return fitness
 
-# This is a function for calculating the best fitness out of a population. It first sets a bestFitness as 
-# infinity so that any fitness calculated will be better. It then loops through the population, calculating the 
-# fitness of each chromosome. If the fitness is better than the bestFitness, it updates bestFitness and 
-# bestIndex. It also keeps track of the second best fitness and index for when we do crossover later.
+
 
 def calculateBestFitness(population, targetChromosome):
+    """
+    Calculating the best fitness out of a population.
+    
+    1. Sets a bestFitness as infinity so that any fitness calculated will be better. 
+    2. Loops through the population, calculating the fitness of each chromosome. 
+    3. If the fitness is better than the bestFitness, it updates bestFitness and bestIndex. 
+    4. Keeps track of the second best fitness and index for when we do crossover later.
+
+    args:
+        population: List of chromosomes in the current generation
+        targetChromosome: The target chromosome we are trying to match
+
+    returns:
+        bestIndex: Index of the best chromosome in the population
+        secondBestIndex: Index of the second best chromosome in the population
+        bestFitness: The best fitness value found in the population
+    """
+
     bestIndex = 0
     bestFitness = float('inf')
     secondBestFitness = float('inf')
@@ -189,33 +223,71 @@ def calculateBestFitness(population, targetChromosome):
             bestIndex = i
     return bestIndex, secondBestIndex, bestFitness
 
-# Here we are doing crossover between two chromosomes to create two new ones. We randomly select a crossover 
-# point and swap the genes after that point. The best two parents are passed in as arguments.
+
 def crossover(chromosomeA, chromosomeB):
+    """
+    This function performs crossover between two chromosomes to create two new ones. We randomly 
+    select a crossover point and swap the genes after that point. The best two parents are passed 
+    in as arguments.
+
+    args:
+        chromosomeA: The first parent chromosome
+        chromosomeB: The second parent chromosome
+
+    returns:
+        newChromosome1: The first new chromosome created from crossover
+        newChromosome2: The second new chromosome created from crossover
+    """
+
     crossoverPoint = rd.randint(1, len(chromosomeA) - 1)
     newChromosome1 = chromosomeA[:crossoverPoint] + chromosomeB[crossoverPoint:]
     newChromosome2 = chromosomeB[:crossoverPoint] + chromosomeA[crossoverPoint:]
     return newChromosome1, newChromosome2
 
-# This is our mutation function. It goes through each angle in the chromosome and then generate a random number.
-# If the random number is less than the mutation rate, it mutates that angle by generating a new random angle.
 def mutate(chromosome, mutationRate):
+    """
+    This function is for mutating a chromosome. It goes through each angle in the chromosome 
+    and generates a random number.
+    If the random number is less than the mutation rate, it mutates that angle by generating a new random angle.
+
+    args:
+        chromosome: The chromosome to be mutated
+        mutationRate: The mutation rate for the genetic algorithm
+
+    returns:
+        mutatedChromosome: The mutated chromosome
+    """
+
     mutatedChromosome = chromosome.copy()
     for i in range(len(mutatedChromosome)):
         if rd.random() < mutationRate:
             mutatedChromosome[i] = randRadianGen()
     return mutatedChromosome
 
-# We create a new population by doing crossover between the best and second best chromosomes.
-# 15 of the new created with the first half of A and second half of B, and 15 with first half of B and 
-# second half of A.
-
 def createNewPopulation(best, secondBest, populationSize):
+    """
+    This function creates a new population by doing crossover between the best and second best chromosomes.
+    15 of the new created with the first half of A and second half of B, and 15 with first half of B and 
+    second half of A.
+
+    args:
+        best: The best chromosome in the current generation
+        secondBest: The second best chromosome in the current generation
+        populationSize: The size of the population for the genetic algorithm
+
+    returns:
+        newPopulation: The new population created from crossover
+    """
+
     newPopulation = []
+
     for i in range(int(populationSize / 2)):
+
         newChromosomeA, newChromosomeB = crossover(best, secondBest)
+
         newPopulation.append(newChromosomeA)
         newPopulation.append(newChromosomeB)
+
     return newPopulation
 
 def runGA(generations, populationSize, mutationRate, GAPoses):
@@ -266,8 +338,6 @@ def runGA(generations, populationSize, mutationRate, GAPoses):
         
         bestFitness = float('inf')
 
-
-        #
         for gen in range(generations):
             genBestIndex, secondBestChromosomeIndex, genBestFitness = calculateBestFitness(population, targetChromosome)
             print(f"Frame {chrom + 1}/300 - Generation {gen}: Best Fitness = {100 - genBestFitness}")
