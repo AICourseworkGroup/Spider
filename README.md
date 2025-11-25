@@ -11,6 +11,12 @@ matplotlib
 torch
 ```
 
+## Prerequisites
+
+- **Python**: Version 3.10 or newer (tested with 3.11 via the provided Conda environment).
+- **Operating system**: Developed and verified on Linux (Ubuntu 22.04). It should also run on macOS and Windows, but those platforms are currently untested.
+- **GPU (optional)**: A CUDA-, ROCm-, or Intel-supported GPU with the appropriate drivers if you plan to install an accelerated PyTorch build. CPU-only execution works out of the box.
+
 ## Installation
 
 1. Clone the repository:
