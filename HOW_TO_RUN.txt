@@ -1,0 +1,38 @@
+========================================
+Spider Gait Generation Project/Coursework
+HOW TO RUN
+========================================
+
+1. REQUIRED SOFTWARE & DEPENDENCIES
+   - Python 3.10 or newer (tested with Python 3.11 via environment.yml)
+   - Operating system: Linux (Ubuntu 22.04 tested). macOS and Windows should work but are unverified.
+   - Optional GPU: CUDA, ROCm, or Intel-supported GPU with matching drivers if you want an accelerated PyTorch build.
+   - Python libraries:
+       numpy
+       matplotlib
+       torch
+
+2. ENVIRONMENT SETUP
+   Option A – Conda (recommended):
+       conda env create -f environment.yml
+       conda activate spider
+       # If you need GPU acceleration, edit environment.yml to enable the appropriate PyTorch build.
+
+   Option B – Python venv + pip:
+       python3 -m venv venv
+       source venv/bin/activate   # On Windows: venv\Scripts\activate
+       pip install -r requirements.txt
+       # If you need GPU acceleration, edit requirements.txt to enable the appropriate PyTorch build.
+
+3. RUNNING THE PROGRAM
+   From the project root:
+       python main.py
+
+4. INPUTS, OUTPUTS, EXAMPLE
+   - Inputs: User-entered GA parameters and animation confirmations when prompted.
+   - Outputs: Console logs, optional matplotlib animations/plots, and trained neural-network predictions.
+   - Example session:
+       python main.py
+       # Enter GA parameters when asked (e.g., 50 generations, population size 100, mutation rate 0.05)
+       # Choose whether to animate target chromosomes when prompted.
+       # Observe GA progress and neural-network results in the console and plots.
