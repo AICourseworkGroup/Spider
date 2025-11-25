@@ -129,8 +129,14 @@ class Full_NN(object):
             output = self.FF(input): Forward pass to get the network output for the given input
             e = t - output: Calculate the error between target and output
             MSQE: Mean Squared Quadratic Error
+            
+        
+        Returns:
+            loss_history: List of loss values per epoch for plotting
         """
 
+        loss_history = []  # Store loss per epoch for plotting
+        
         for i in range(epochs):
             S_errors = 0  
             for j, input in enumerate(x):
@@ -150,7 +156,11 @@ class Full_NN(object):
 
             # Print mean squared quadratic error (MSQE) for this epoch so user can track training
             epoch_loss = np.average(S_errors)
+
+            loss_history.append(epoch_loss)  # Store loss for plotting
             print(f"Epoch {i+1}/{epochs} MSQE: {epoch_loss}")
+        
+        return loss_history
 
 
     def GD(self, lr=0.05): 

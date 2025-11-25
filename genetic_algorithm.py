@@ -208,6 +208,7 @@ def calculateBestFitness(population, targetChromosome):
         bestIndex: Index of the best chromosome in the population
         secondBestIndex: Index of the second best chromosome in the population
         bestFitness: The best fitness value found in the population
+        
     """
 
     bestIndex = 0

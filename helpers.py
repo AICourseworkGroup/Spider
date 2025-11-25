@@ -100,6 +100,10 @@ def train_custom_nn(inputData, GAPoses):
     trained with the input data and target data from the genetic algorithm poses as the target data. the epochs is how many times the neural netwrok will 
     iterate over the traing data. lr is the learning rate it determins how much to change the model in response to the estimated error each time the model 
     weights are updated.
+    
+    Returns:
+        nn: Trained neural network
+        custom_loss_history: List of loss values per epoch for plotting
     """
 
     print("\n" + "="*100)
@@ -109,9 +113,9 @@ def train_custom_nn(inputData, GAPoses):
     nn = Full_NN(X=24, HL=[512, 256], Y=24)
     print("Neural Network initialized: 24 -> 512 -> 256 -> 24")
     print("\nTraining custom NN (printing progress)...")
-    nn.train_nn(x=inputData, target=GAPoses, epochs=1000, lr=0.01)
+    custom_loss_history = nn.train_nn(x=inputData, target=GAPoses, epochs=1000, lr=0.01)
     print("Custom NN training complete!")
-    return nn
+    return nn, custom_loss_history
 
 def display_custom_nn_input():
     """
@@ -151,14 +155,18 @@ def display_training_pytorch_nn(inputData, GAPoses):
     """
     display_training_pytorch_nn(inputData, GAPoses) is step 8 in the main program imported from the helpers file. iy prints and runs the 
     run_pytorch_nn function that trains a PYTorch neural network and returns the trained model as an output.
+    
+    Returns:
+        pytorch_model: Trained PyTorch model
+        pytorch_loss_history: List of loss values per epoch for plotting
     """
 
     print("\n" + "="*100)
     print("STEP 8: Training PyTorch Neural Network")
     print("="*100)
-    pytorch_model = run_pytorch_nn(inputData, GAPoses, epochs=300, lr=0.01)
+    pytorch_model, pytorch_loss_history = run_pytorch_nn(inputData, GAPoses, epochs=300, lr=0.01)
     print("PyTorch NN training complete!")
-    return pytorch_model
+    return pytorch_model, pytorch_loss_history
 
 def display_pytorch_nn_input():
     """
@@ -193,6 +201,79 @@ def display_pytorch_nn_output(pytorch_model, testPose2):
     plt.pause(3)
     plt.close()
     return pytorch_prediction
+
+def plot_loss_comparison(custom_loss_history, pytorch_loss_history):
+    """
+    Plots the training loss per epoch for both the custom neural network and PyTorch neural network
+    on the same graph for comparison. This visualizes how each network learns over time. Once you 
+    close the the plot, it will print out a summary of the training statistics for both neural networks. 
+
+    Parameters:
+        custom_loss_history (list): Loss values per epoch from the custom neural network (MSQE).
+        pytorch_loss_history (list): Loss values per epoch from the PyTorch neural network (MSE).
+
+    
+    """
+    print("\n" + "="*100)
+    print("STEP 11: Training Loss Comparison Plot")
+    print("="*100)
+    
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+    
+    # Plot 1: Both on same scale (normalized for comparison)
+    custom_epochs = range(1, len(custom_loss_history) + 1)
+    pytorch_epochs = range(1, len(pytorch_loss_history) + 1)
+    
+    ax1.plot(custom_epochs, custom_loss_history, label=f'Custom NN ({len(custom_loss_history)} epochs)', color='blue', alpha=0.7)
+    ax1.plot(pytorch_epochs, pytorch_loss_history, label=f'PyTorch NN ({len(pytorch_loss_history)} epochs)', color='orange', alpha=0.7)
+    ax1.set_xlabel('Epoch')
+    ax1.set_ylabel('Loss (MSE)')
+    ax1.set_title('Training Loss Comparison: Custom NN vs PyTorch NN')
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+    
+    # Plot 2: Log scale for better visualization
+    ax2.plot(custom_epochs, custom_loss_history, label=f'Custom NN (Final: {custom_loss_history[-1]:.6f})', color='blue', alpha=0.7)
+    ax2.plot(pytorch_epochs, pytorch_loss_history, label=f'PyTorch NN (Final: {pytorch_loss_history[-1]:.6f})', color='orange', alpha=0.7)
+    ax2.set_xlabel('Epoch')
+    ax2.set_ylabel('Loss (MSE) - Log Scale')
+    ax2.set_title('Training Loss Comparison (Log Scale)')
+    ax2.set_yscale('log')
+    ax2.legend()
+    ax2.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.show()
+
+    print("Close window to continue")
+
+    # Calculate average loss for each neural network
+    
+
+    return custom_loss_history, pytorch_loss_history
+
+def display_nn_training_summary(custom_loss_history, pytorch_loss_history):
+    """
+    Displays a summary of the neural network training statistics and will display how many epoch where used for 
+    each nn, the inital loss from the first epoch, the final loss value from the last epoch, and the average epoch
+    throughout the process.
+
+    args:
+        custom_loss_history: List of loss values per epoch for the custom neural network
+        pytorch_loss_history: List of loss values per epoch for the PyTorch neural network
+        custom_avg_loss: Average loss value for the custom neural network
+        pytorch_avg_loss: Average loss value for the PyTorch neural network 
+    
+    """
+
+    custom_avg_loss = sum(custom_loss_history) / len(custom_loss_history)
+    pytorch_avg_loss = sum(pytorch_loss_history) / len(pytorch_loss_history)
+    
+    print(f"\nTraining Summary:")
+    print(f"  Custom NN  - Epochs: {len(custom_loss_history)}, Initial Loss: {custom_loss_history[0]:.6f}, Final Loss: {custom_loss_history[-1]:.6f}, Average Loss: {custom_avg_loss:.6f}")
+    print(f"  PyTorch NN - Epochs: {len(pytorch_loss_history)}, Initial Loss: {pytorch_loss_history[0]:.6f}, Final Loss: {pytorch_loss_history[-1]:.6f}, Average Loss: {pytorch_avg_loss:.6f}")
+    print("Loss comparison plot displayed.")
+
 
 def display_all_steps_complete():
     """
