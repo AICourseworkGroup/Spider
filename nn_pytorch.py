@@ -36,7 +36,15 @@ class PyTorch_NN(nn.Module):
         self.network = nn.Sequential(*layers)
         
     def forward(self, x):
-        """Forward pass through the network"""
+        """
+        Forward pass through the network
+
+        Args:
+            x: Input tensor
+
+        Returns:
+            Output tensor after passing through the network
+        """
         return self.network(x)
     
     def train_network(self, input_data, target_data, epochs=100, lr=0.001):
@@ -47,13 +55,25 @@ class PyTorch_NN(nn.Module):
         library. Next the optimiser for the learning rate and criteria for loss is decided. Adam was chosen 
         due to its common usage; it was found to work well so it was not changed. MSE was also chosen due to 
         its common usage. 
+
+        We used adam optomizer over SGD because it combines the benefits of adaptive learning rates and momentum, 
+        leading to faster convergence and better performance on complex problems.
         
         Args:
             input_data: List of input poses (random poses)
             target_data: List of target poses (GA poses)
             epochs: Number of training epochs
             lr: Learning rate
+            x_train: Tensor of input poses
+            y_train: Tensor of target poses
+            optimizer: Optimizer for training
+            criterion: Loss function
+
+        Returns:
+            loss_history: List of loss values per epoch for plotting visualization
+
         """
+        
         # Convert data to tensors
         x_train = torch.tensor(input_data, dtype=torch.float32)
         y_train = torch.tensor(target_data, dtype=torch.float32)
@@ -61,6 +81,8 @@ class PyTorch_NN(nn.Module):
         # Set up optimizer and loss function
         optimizer = torch.optim.Adam(self.parameters(), lr=lr)
         criterion = nn.MSELoss()
+        
+        loss_history = []  # Store loss values for plotting visualization
         
         # Training loop
         for epoch in range(epochs):
@@ -73,11 +95,14 @@ class PyTorch_NN(nn.Module):
             loss.backward()
             optimizer.step()
             
+            # Store loss values for plotting visualization
+            loss_history.append(loss.item())
+            
             # Print progress
             print(f"Epoch {epoch + 1}/{epochs}, Loss: {loss.item():.6f}")
         
         print(f"Training complete. Final loss: {loss.item():.6f}")
-        return loss.item()
+        return loss_history
     
     def predict(self, input_pose):
         """
@@ -112,7 +137,8 @@ def run_pytorch_nn(input_data, target_data, epochs=50, lr=0.01):
         lr: Learning rate
         
     Returns:
-        Trained model
+        model: Trained model
+        loss_history: List of loss values per epoch for plotting
     """
     print("\n=== PyTorch Neural Network ===")
     
@@ -122,6 +148,6 @@ def run_pytorch_nn(input_data, target_data, epochs=50, lr=0.01):
     
     # Train model
     print("\nTraining PyTorch network...")
-    model.train_network(input_data, target_data, epochs=epochs, lr=lr)
+    loss_history = model.train_network(input_data, target_data, epochs=epochs, lr=lr)
     
-    return model
+    return model, loss_history
